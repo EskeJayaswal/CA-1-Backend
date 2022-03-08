@@ -30,10 +30,10 @@ public class Person {
             inverseJoinColumns = @JoinColumn(name = "hobby_id"))
     private List<Hobby> hobbyList = new ArrayList<>();
 
-//    @OneToMany(
-//            mappedBy = "person"
-//    )
-//    private List<Phone> phoneList = new ArrayList<>();
+    @OneToMany(
+            mappedBy = "person"
+    )
+    private List<Phone> phoneList = new ArrayList<>();
 //
 //    @ManyToOne
 //    @JoinColumn(
@@ -96,18 +96,18 @@ public class Person {
         hobby.addPerson(this);
     }
 
-//    public List<Phone> getPhoneList() {
-//        return phoneList;
-//    }
-//
-//    public void setPhoneList(List<Phone> phoneList) {
-//        this.phoneList = phoneList;
-//    }
-//
-//    public void addPhone(Phone phone) {
-//        this.phoneList.add(phone);
-//        phone.setPerson(this);
-//    }
+    public List<Phone> getPhoneList() {
+        return phoneList;
+    }
+
+    public void setPhoneList(List<Phone> phoneList) {
+        this.phoneList = phoneList;
+    }
+
+    public void addPhone(Phone phone) {
+        this.phoneList.add(phone);
+        phone.setPerson(this);
+    }
 //
 //    public Address getAddress() {
 //        return address;

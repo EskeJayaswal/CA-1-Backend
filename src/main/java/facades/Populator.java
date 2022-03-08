@@ -61,19 +61,31 @@ public class Populator {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu");
         EntityManager em = emf.createEntityManager();
 
+
+        Phone phone = new Phone("12345678", "Work");
+
         Person olaf = new Person("p1@wd", "Olaf", "Berken");
 
         Hobby h1 = new Hobby("Tennis", "Slå til bold");
+
+        olaf.addPhone(phone);
+
         olaf.addHobby(h1);
 
 
         try {
             em.getTransaction().begin();
+
+
             em.persist(h1);
 
 
 
             em.persist(olaf);
+
+
+
+            em.persist(phone);
 
 
             em.getTransaction().commit();
