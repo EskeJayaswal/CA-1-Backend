@@ -4,11 +4,12 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Entity
+@Entity
 @Table(name = "city_info")
 @NamedQuery(name = "CityInfo.deleteAllRows", query = "DELETE from CityInfo")
 public class CityInfo {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -18,10 +19,10 @@ public class CityInfo {
     @Column(name = "city")
     private String city;
 
-//    @OneToMany(
-//            mappedBy = "city_info"
-//    )
-//    private List<Address> addressList = new ArrayList<>();
+    @OneToMany(
+            mappedBy = "cityInfo"
+    )
+    private List<Address> addressList = new ArrayList<>();
 
     public CityInfo() {}
 
@@ -54,26 +55,26 @@ public class CityInfo {
         this.city = city;
     }
 
-//    public List<Address> getAddressList() {
-//        return addressList;
-//    }
-//
-//    public void setAddressList(List<Address> addressList) {
-//        this.addressList = addressList;
-//    }
-//
-//    public void addAddress(Address address) {
-//        this.addressList.add(address);
-//        address.setCityInfo(this);
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "CityInfo{" +
-//                "id=" + id +
-//                ", zipCode='" + zipCode + '\'' +
-//                ", city='" + city + '\'' +
-//                ", addressList=" + addressList +
-//                '}';
-//    }
+    public List<Address> getAddressList() {
+        return addressList;
+    }
+
+    public void setAddressList(List<Address> addressList) {
+        this.addressList = addressList;
+    }
+
+    public void addAddress(Address address) {
+        this.addressList.add(address);
+        address.setCityInfo(this);
+    }
+
+    @Override
+    public String toString() {
+        return "CityInfo{" +
+                "id=" + id +
+                ", zipCode='" + zipCode + '\'' +
+                ", city='" + city + '\'' +
+                ", addressList=" + addressList +
+                '}';
+    }
 }

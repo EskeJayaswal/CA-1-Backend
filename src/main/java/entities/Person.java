@@ -34,12 +34,12 @@ public class Person {
             mappedBy = "person"
     )
     private List<Phone> phoneList = new ArrayList<>();
-//
-//    @ManyToOne
-//    @JoinColumn(
-//            name = "address_id"
-//    )
-//    private Address address;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "address_id"
+    )
+    private Address address;
 
 
     public Person() {
@@ -108,14 +108,14 @@ public class Person {
         this.phoneList.add(phone);
         phone.setPerson(this);
     }
-//
-//    public Address getAddress() {
-//        return address;
-//    }
-//
-//    public void setAddress(Address address) {
-//        this.address = address;
-//    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
 
 }

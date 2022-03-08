@@ -62,26 +62,45 @@ public class Populator {
         EntityManager em = emf.createEntityManager();
 
 
-        Phone phone = new Phone("12345678", "Work");
+        Phone phone = new Phone("23984312", "Work");
 
-        Person olaf = new Person("p1@wd", "Olaf", "Berken");
+        Person person = new Person("lol@wow.dk", "Allan", "Anderson");
 
-        Hobby h1 = new Hobby("Tennis", "Slå til bold");
+        Address address = new Address("Alkovej 1", "Bla bla");
 
-        olaf.addPhone(phone);
+        CityInfo cityInfo = new CityInfo("1234", "Aarhus");
 
-        olaf.addHobby(h1);
+        Hobby hobby = new Hobby("Football", "NFL");
+
+
+
+
+
+        cityInfo.addAddress(address);
+
+
+        address.addPerson(person);
+
+
+
+        person.addPhone(phone);
+
+        person.addHobby(hobby);
 
 
         try {
             em.getTransaction().begin();
 
 
-            em.persist(h1);
+            em.persist(hobby);
+
+            em.persist(cityInfo);
 
 
+            em.persist(address);
 
-            em.persist(olaf);
+
+            em.persist(person);
 
 
 

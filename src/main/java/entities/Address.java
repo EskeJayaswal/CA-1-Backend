@@ -4,11 +4,12 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-//@Entity
-//@Table(name = "address")
-//@NamedQuery(name = "Address.deleteAllRows", query = "DELETE from Address")
+@Entity
+@Table(name = "address")
+@NamedQuery(name = "Address.deleteAllRows", query = "DELETE from Address")
 public class Address {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -18,10 +19,10 @@ public class Address {
     @Column(name = "additional_info")
     private String additionalInfo;
 
-//    @OneToMany(
-//            mappedBy = "address"
-//    )
-//    private List<Person> personList = new ArrayList<>();
+    @OneToMany(
+            mappedBy = "address"
+    )
+    private List<Person> personList = new ArrayList<>();
 
     @ManyToOne()
     @JoinColumn(name = "city_info_id")
@@ -58,19 +59,19 @@ public class Address {
     public void setAdditionalInfo(String additionalInfo) {
         this.additionalInfo = additionalInfo;
     }
-//
-//    public List<Person> getPersonList() {
-//        return personList;
-//    }
-//
-//    public void setPersonList(List<Person> personList) {
-//        this.personList = personList;
-//    }
 
-//    public void addPerson(Person person) {
-//        this.personList.add(person);
-//        person.setAddress(this);
-//    }
+    public List<Person> getPersonList() {
+        return personList;
+    }
+
+    public void setPersonList(List<Person> personList) {
+        this.personList = personList;
+    }
+
+    public void addPerson(Person person) {
+        this.personList.add(person);
+        person.setAddress(this);
+    }
 
     public CityInfo getCityInfo() {
         return cityInfo;
