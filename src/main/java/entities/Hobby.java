@@ -9,6 +9,7 @@ import java.util.List;
 @NamedQuery(name = "Hobby.deleteAllRows", query = "DELETE from Hobby")
 public class Hobby {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 

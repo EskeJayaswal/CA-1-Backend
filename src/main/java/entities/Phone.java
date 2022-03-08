@@ -2,9 +2,9 @@ package entities;
 
 import javax.persistence.*;
 
-@Entity
-@Table(name = "phone")
-@NamedQuery(name = "Phone.deleteAllRows", query = "DELETE from Phone")
+//@Entity
+//@Table(name = "phone")
+//@NamedQuery(name = "Phone.deleteAllRows", query = "DELETE from Phone")
 public class Phone {
     @Id
     @Column(name = "id", nullable = false)

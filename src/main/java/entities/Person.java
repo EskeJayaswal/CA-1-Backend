@@ -10,6 +10,7 @@ import java.util.List;
 @NamedQuery(name = "Person.deleteAllRows", query = "DELETE from Person")
 public class Person {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -29,16 +30,16 @@ public class Person {
             inverseJoinColumns = @JoinColumn(name = "hobby_id"))
     private List<Hobby> hobbyList = new ArrayList<>();
 
-    @OneToMany(
-            mappedBy = "person"
-    )
-    private List<Phone> phoneList = new ArrayList<>();
-
-    @ManyToOne
-    @JoinColumn(
-            name = "address_id"
-    )
-    private Address address;
+//    @OneToMany(
+//            mappedBy = "person"
+//    )
+//    private List<Phone> phoneList = new ArrayList<>();
+//
+//    @ManyToOne
+//    @JoinColumn(
+//            name = "address_id"
+//    )
+//    private Address address;
 
 
     public Person() {
@@ -95,37 +96,26 @@ public class Person {
         hobby.addPerson(this);
     }
 
-    public List<Phone> getPhoneList() {
-        return phoneList;
-    }
+//    public List<Phone> getPhoneList() {
+//        return phoneList;
+//    }
+//
+//    public void setPhoneList(List<Phone> phoneList) {
+//        this.phoneList = phoneList;
+//    }
+//
+//    public void addPhone(Phone phone) {
+//        this.phoneList.add(phone);
+//        phone.setPerson(this);
+//    }
+//
+//    public Address getAddress() {
+//        return address;
+//    }
+//
+//    public void setAddress(Address address) {
+//        this.address = address;
+//    }
 
-    public void setPhoneList(List<Phone> phoneList) {
-        this.phoneList = phoneList;
-    }
 
-    public void addPhone(Phone phone) {
-        this.phoneList.add(phone);
-        phone.setPerson(this);
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    @Override
-    public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", hobbyList=" + hobbyList +
-                ", phoneList=" + phoneList +
-                ", address=" + address +
-                '}';
-    }
 }
