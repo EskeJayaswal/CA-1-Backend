@@ -4,6 +4,7 @@ import dtos.PersonDTO;
 import entities.Address;
 import entities.CityInfo;
 import entities.Person;
+import entities.Phone;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -31,6 +32,16 @@ public class FacadePerson {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
+
+            /*
+            person.getPhoneList().forEach(el-> {
+                if(el.getId() != 0) {
+                    el = em.find(Phone.class, el.getId());
+                } else {
+                    em.persist(el);
+                }
+            });
+            */
             em.persist(cityInfo);
             em.persist(address);
             em.persist(person);

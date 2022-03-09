@@ -11,6 +11,7 @@ public class PersonDTO {
     private String firstName;
     private String lastName;
     private AddressDTO addressDTO;
+    private List<PhoneDTO> phoneList = new ArrayList<>();
 
     public PersonDTO(String email, String firstName, String lastName, AddressDTO addressDTO) {
         this.email = email;
@@ -74,4 +75,11 @@ public class PersonDTO {
     public void setAddressDTO(AddressDTO addressDTO) {
         this.addressDTO = addressDTO;
     }
+
+    public void addPhoneDTO(PhoneDTO phoneDTO) {
+        this.phoneList.add(phoneDTO);
+        phoneDTO.setPersonDTO(this);
+    }
+
+
 }

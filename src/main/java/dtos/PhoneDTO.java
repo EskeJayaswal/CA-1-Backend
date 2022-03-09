@@ -9,10 +9,12 @@ public class PhoneDTO {
     private long id;
     private String number;
     private String description;
+    private PersonDTO personDTO;
 
     public PhoneDTO(String number, String description) {
         this.number = number;
         this.description = description;
+
     }
 
     public PhoneDTO(Phone p) {
@@ -45,12 +47,11 @@ public class PhoneDTO {
         this.description = description;
     }
 
-    @Override
-    public String toString() {
-        return "PhoneDTO{" +
-                "id=" + id +
-                ", number='" + number + '\'' +
-                ", description='" + description + '\'' +
-                '}';
+    public PersonDTO getPersonDTO() {
+        return personDTO;
+    }
+
+    public void setPersonDTO(PersonDTO personDTO) {
+        this.personDTO = personDTO;
     }
 }
