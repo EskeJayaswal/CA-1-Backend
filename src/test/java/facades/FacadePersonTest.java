@@ -51,7 +51,8 @@ class FacadePersonTest {
         CityInfoDTO ciDTO = new CityInfoDTO("2510", "SimCity");
         AddressDTO aDTO = new AddressDTO("Bobyvej", "Her bor Bob", ciDTO);
         PersonDTO pDTO = new PersonDTO("bob@123.dk", "Bobby", "Longjon", aDTO);
-        facade.create(pDTO);
+        PersonDTO newDto = facade.create(pDTO);
         assertEquals(3, facade.getPersonCount(), "Tests expects 3 persons in database");
+//        System.out.println("newDTO ID = "+ newDto.getId());
     }
 }
