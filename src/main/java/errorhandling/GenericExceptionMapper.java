@@ -49,6 +49,9 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable>  {
         if (ex instanceof WebApplicationException) {
             return ((WebApplicationException) ex).getResponse().getStatusInfo();
         }
+//        if (ex instanceof PersonNotFoundException) {
+//            return ((WebApplicationException) ex).getResponse().getStatusInfo();
+//        }
         return Response.Status.INTERNAL_SERVER_ERROR;
 
     }

@@ -9,10 +9,13 @@ public class AddressDTO {
     private long id;
     private String street;
     private String additionalInfo;
+//    private List<PersonDTO> personDTOList;
+    private CityInfoDTO cityInfoDTO;
 
-    public AddressDTO(String street, String additionalInfo) {
+    public AddressDTO(String street, String additionalInfo, CityInfoDTO ciDTO) {
         this.street = street;
         this.additionalInfo = additionalInfo;
+        this.cityInfoDTO = ciDTO;
     }
 
     public AddressDTO(Address address) {
@@ -21,6 +24,8 @@ public class AddressDTO {
         }
         this.street = address.getStreet();
         this.additionalInfo = address.getAdditionalInfo();
+//        address.getPersonList().forEach(p -> personDTOList.add(new PersonDTO(p)));
+//        this.cityInfoDTO = new CityInfoDTO(address.getCityInfo());
     }
 
     public static List<AddressDTO> getDtos(List<Address> list) {
@@ -45,12 +50,11 @@ public class AddressDTO {
         this.additionalInfo = additionalInfo;
     }
 
-    @Override
-    public String toString() {
-        return "AddressDTO{" +
-                "id=" + id +
-                ", street='" + street + '\'' +
-                ", additionalInfo='" + additionalInfo + '\'' +
-                '}';
+    public CityInfoDTO getCityInfoDTO() {
+        return cityInfoDTO;
+    }
+
+    public void setCityInfoDTO(CityInfoDTO cityInfoDTO) {
+        this.cityInfoDTO = cityInfoDTO;
     }
 }

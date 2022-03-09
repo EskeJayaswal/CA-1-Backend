@@ -1,5 +1,7 @@
 package entities;
 
+import dtos.PersonDTO;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +32,11 @@ public class Person {
             inverseJoinColumns = @JoinColumn(name = "hobby_id"))
     private List<Hobby> hobbyList = new ArrayList<>();
 
-    @OneToMany(
-            mappedBy = "person"
-    )
+    @OneToMany(mappedBy = "person")
     private List<Phone> phoneList = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(
-            name = "address_id"
-    )
+    @JoinColumn(name = "address_id")
     private Address address;
 
 
@@ -49,6 +47,12 @@ public class Person {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public Person(PersonDTO pDTO) {
+        this.email = pDTO.getEmail();
+        this.firstName = pDTO.getFirstName();
+        this.lastName = pDTO.getLastName();
     }
 
     public Long getId() {

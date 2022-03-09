@@ -19,66 +19,28 @@ import utils.EMF_Creator;
  * @author tha
  */
 public class Populator {
-    public static void populate(){
-//        EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
-//        FacadeExample fe = FacadeExample.getFacadeExample(emf);
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu");
-        EntityManager em = emf.createEntityManager();
-
-        Person olaf = new Person("p1@wd", "Olaf", "Berken");
-
-        Hobby h1 = new Hobby("Tennis", "Slå til bold");
-        olaf.addHobby(h1);
-
-//        Phone p1 = new Phone("56161", "Home Phone");
-//        olaf.addPhone(p1);
-//
-//        Address a1 = new Address("Oladvej", "Olafs vej");
-//        a1.addPerson(olaf);
-//
-//        CityInfo c1 = new CityInfo("1864", "VikingVille");
-//        c1.addAddress(a1);
-
-//        try {
-//            em.getTransaction().begin();
-//            em.persist(olaf);
-//            em.persist(a1);
-//            em.persist(c1);
-//            em.persist(h1);
-//            em.persist(p1);
-//            em.getTransaction().commit();
-//        } finally {
-//            em.close();
-//        }
-
-//        fe.create(new RenameMeDTO(new RenameMe("First 1", "Last 1")));
-//        fe.create(new RenameMeDTO(new RenameMe("First 2", "Last 2")));
-//        fe.create(new RenameMeDTO(new RenameMe("First 3", "Last 3")));
-    }
-
-
     public static void newPopulator() {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu");
         EntityManager em = emf.createEntityManager();
 
         Phone phone = new Phone("23984312", "Work");
-        Person person = new Person("lol@wow.dk", "Allan", "Anderson");
+        Person person = new Person("loadsfsdfl@wow.dk", "Bobby", "Anderson");
         Address address = new Address("Alkovej 1", "Bla bla");
         CityInfo cityInfo = new CityInfo("1234", "Aarhus");
         Hobby hobby = new Hobby("Football", "NFL");
 
-        cityInfo.addAddress(address);
-        address.addPerson(person);
-        person.addPhone(phone);
-        person.addHobby(hobby);
+//        cityInfo.addAddress(address);
+//        address.addPerson(person);
+//        person.addPhone(phone);
+//        person.addHobby(hobby);
 
         try {
             em.getTransaction().begin();
-            em.persist(hobby);
-            em.persist(cityInfo);
-            em.persist(address);
+//            em.persist(hobby);
+//            em.persist(cityInfo);
+//            em.persist(address);
             em.persist(person);
-            em.persist(phone);
+//            em.persist(phone);
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -89,4 +51,6 @@ public class Populator {
 //        populate();
         newPopulator();
     }
+
+
 }

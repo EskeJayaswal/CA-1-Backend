@@ -1,5 +1,7 @@
 package entities;
 
+import dtos.CityInfoDTO;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,11 @@ public class CityInfo {
     public CityInfo(String zipCode, String city) {
         this.zipCode = zipCode;
         this.city = city;
+    }
+
+    public CityInfo(CityInfoDTO ciDTO) {
+        this.zipCode = ciDTO.getZipCode();
+        this.city = ciDTO.getCity();
     }
 
     public Long getId() {
@@ -64,15 +71,5 @@ public class CityInfo {
     public void addAddress(Address address) {
         this.addressList.add(address);
         address.setCityInfo(this);
-    }
-
-    @Override
-    public String toString() {
-        return "CityInfo{" +
-                "id=" + id +
-                ", zipCode='" + zipCode + '\'' +
-                ", city='" + city + '\'' +
-                ", addressList=" + addressList +
-                '}';
     }
 }

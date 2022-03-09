@@ -10,11 +10,13 @@ public class PersonDTO {
     private String email;
     private String firstName;
     private String lastName;
+    private AddressDTO addressDTO;
 
-    public PersonDTO(String email, String firstName, String lastName) {
+    public PersonDTO(String email, String firstName, String lastName, AddressDTO addressDTO) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.addressDTO = addressDTO;
     }
 
     public PersonDTO(Person person) {
@@ -24,6 +26,7 @@ public class PersonDTO {
         this.email = person.getEmail();
         this.firstName = person.getFirstName();
         this.lastName = person.getLastName();
+        this.addressDTO = new AddressDTO(person.getAddress());
     }
 
     public static List<PersonDTO> getDtos(List<Person> persons) {
@@ -56,13 +59,11 @@ public class PersonDTO {
         this.lastName = lastName;
     }
 
-    @Override
-    public String toString() {
-        return "PersonDTO{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                '}';
+    public AddressDTO getAddressDTO() {
+        return addressDTO;
+    }
+
+    public void setAddressDTO(AddressDTO addressDTO) {
+        this.addressDTO = addressDTO;
     }
 }
