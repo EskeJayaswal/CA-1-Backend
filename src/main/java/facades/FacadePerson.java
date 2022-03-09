@@ -1,10 +1,8 @@
 package facades;
 
+import dtos.HobbyDTO;
 import dtos.PersonDTO;
-import entities.Address;
-import entities.CityInfo;
-import entities.Person;
-import entities.Phone;
+import entities.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -50,6 +48,23 @@ public class FacadePerson {
             em.close();
         }
         return new PersonDTO(person);
+    }
+
+    public void addHobby(long personID, long hobbyID) {
+        EntityManager em = emf.createEntityManager();
+        Person person = em.find(Person.class, personID);
+        Hobby hobby = em.find(Hobby.class, hobbyID);
+        person.addHobby(hobby);
+
+        try {
+            em.getTransaction().begin();
+            em.merge(person);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+
+
     }
 
     public PersonDTO getById(long id) {

@@ -1,6 +1,5 @@
 package facades;
 
-import dtos.PersonDTO;
 import dtos.PhoneDTO;
 import entities.Person;
 import entities.Phone;

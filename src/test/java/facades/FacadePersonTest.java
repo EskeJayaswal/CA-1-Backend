@@ -50,13 +50,16 @@ class FacadePersonTest {
     @Test
     public void testCreateMethod() {
         PhoneDTO phoneDTO = new PhoneDTO("32344343", "facadePerson");
+        PhoneDTO phoneDTO2 = new PhoneDTO("12211122", "facadePerson2");
         CityInfoDTO ciDTO = new CityInfoDTO("2510", "SimCity");
         AddressDTO aDTO = new AddressDTO("Bobyvej", "Her bor Bob", ciDTO);
         PersonDTO pDTO = new PersonDTO("bob@123.dk", "Bobby", "Longjon", aDTO);
         PersonDTO newDto = facade.create(pDTO);
         newDto.addPhoneDTO(phoneDTO);
+        newDto.addPhoneDTO(phoneDTO2);
         FacadePhone facadePhone = FacadePhone.getFacadePhone(emf);
         facadePhone.create(phoneDTO);
+        facadePhone.create(phoneDTO2);
         assertEquals(3, facade.getPersonCount(), "Tests expects 3 persons in database");
 //        System.out.println("newDTO ID = "+ newDto.getId());
     }
