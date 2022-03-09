@@ -38,4 +38,9 @@ public class FacadeHobby {
         return new HobbyDTO(hobby);
     }
 
+    public HobbyDTO getHobbyByID(long id) {
+        EntityManager em = emf.createEntityManager();
+        Hobby hobby = em.find(Hobby.class, id);
+        return new HobbyDTO(hobby);
+    }
 }

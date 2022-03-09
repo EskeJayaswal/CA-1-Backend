@@ -12,6 +12,7 @@ public class PersonDTO {
     private String lastName;
     private AddressDTO addressDTO;
     private List<PhoneDTO> phoneList = new ArrayList<>();
+    private List<HobbyDTO> hobbyDTOList = new ArrayList<>();
 
     public PersonDTO(String email, String firstName, String lastName, AddressDTO addressDTO) {
         this.email = email;
@@ -74,6 +75,26 @@ public class PersonDTO {
 
     public void setAddressDTO(AddressDTO addressDTO) {
         this.addressDTO = addressDTO;
+    }
+
+    public List<PhoneDTO> getPhoneList() {
+        return phoneList;
+    }
+
+    public void setPhoneList(List<PhoneDTO> phoneList) {
+        this.phoneList = phoneList;
+    }
+
+    public List<HobbyDTO> getHobbyDTOList() {
+        return hobbyDTOList;
+    }
+
+    public void setHobbyDTOList(List<HobbyDTO> hobbyDTOList) {
+        this.hobbyDTOList = hobbyDTOList;
+    }
+
+    public void addHobbyDTO(HobbyDTO hobbyDTO) {
+        this.hobbyDTOList.add(hobbyDTO);
     }
 
     public void addPhoneDTO(PhoneDTO phoneDTO) {

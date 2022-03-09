@@ -63,7 +63,24 @@ public class FacadePerson {
         } finally {
             em.close();
         }
+    }
 
+    public void addAllHobbies(PersonDTO personDTO) {
+        EntityManager em = emf.createEntityManager();
+
+
+        try {
+            Person person = em.find(Person.class, personDTO.getId());
+            em.getTransaction().begin();
+            personDTO.getHobbyDTOList().forEach(hobbyDTO -> {
+                person.addHobby(new Hobby(hobbyDTO));
+            });
+            em.merge(person);
+            em.getTransaction().commit();
+
+        } finally {
+            em.close();
+        }
 
     }
 
