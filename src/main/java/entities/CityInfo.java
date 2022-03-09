@@ -19,9 +19,7 @@ public class CityInfo {
     @Column(name = "city")
     private String city;
 
-    @OneToMany(
-            mappedBy = "cityInfo"
-    )
+    @OneToMany(mappedBy = "cityInfo")
     private List<Address> addressList = new ArrayList<>();
 
     public CityInfo() {}
