@@ -1,5 +1,7 @@
 package dtos;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import entities.Person;
 
 import java.util.ArrayList;
@@ -102,5 +104,37 @@ public class PersonDTO {
         phoneDTO.setPersonDTO(this);
     }
 
+    @Override
+    public String toString() {
+        return "PersonDTO{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                '}';
+    }
 
+    public JsonObject toJson() {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("personID", getId());
+        jsonObject.addProperty("email", getEmail());
+        jsonObject.addProperty("firstName", getFirstName());
+        jsonObject.addProperty("lastName", getLastName());
+        jsonObject.addProperty("addressId", getAddressDTO().getId());
+        jsonObject.addProperty("street", getAddressDTO().getStreet());
+        jsonObject.addProperty("additionalInfo", getAddressDTO().getAdditionalInfo());
+        jsonObject.addProperty("cityInfoId", getAddressDTO().getCityInfoDTO().getId());
+        jsonObject.addProperty("zipCode", getAddressDTO().getCityInfoDTO().getZipCode());
+        jsonObject.addProperty("city", getAddressDTO().getCityInfoDTO().getCity());
+        JsonArray jsonArray = new JsonArray();
+        for (PhoneDTO p : getPhoneList()) {
+            JsonObject pObject = new JsonObject();
+            pObject.addProperty("phoneId", p.getId());
+            pObject.addProperty("number", p.getNumber());
+            pObject.addProperty("description", p.getDescription());
+            jsonArray.add(pObject);
+        }
+        jsonObject.add("phone", jsonArray);
+        return jsonObject;
+    }
 }

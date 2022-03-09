@@ -25,13 +25,21 @@ public class AddressDTO {
         this.street = address.getStreet();
         this.additionalInfo = address.getAdditionalInfo();
 //        address.getPersonList().forEach(p -> personDTOList.add(new PersonDTO(p)));
-//        this.cityInfoDTO = new CityInfoDTO(address.getCityInfo());
+        this.cityInfoDTO = new CityInfoDTO(address.getCityInfo());
     }
 
     public static List<AddressDTO> getDtos(List<Address> list) {
         List<AddressDTO> aDtos = new ArrayList<>();
         list.forEach(address -> aDtos.add(new AddressDTO(address)));
         return aDtos;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getStreet() {

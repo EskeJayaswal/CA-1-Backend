@@ -1,0 +1,44 @@
+POST http://localhost:8080/ca1_war_exploded/api/person/addperson
+Content-Type: application/json
+
+{
+  "email": "apiEmail",
+  "firstName": "apiFirstName",
+  "lastName": "apiLastName",
+  "street": "apiStreet",
+  "additionalInfo": "apiAdditionalInfo",
+  "zipCode": "apiZipCode",
+  "city": "apiCity",
+  "phone": [
+    {
+      "number": "apiNumber1",
+      "description": "apiDescription1"
+    },
+    {
+      "number": "apiNumber2",
+      "description": "apiDescription2"
+    }
+  ]
+}
+
+###
+
+POST http://localhost:8080/ca1_war_exploded/api/person/addhobby
+Content-Type: application/json
+
+{
+  "personId": 22,
+  "hobbyId": 2
+}
+
+###
+
+POST http://localhost:8080/ca1_war_exploded/api/person/addallhobbies
+Content-Type: application/json
+
+{
+  "personId": 22,
+  "hobbies": [
+    1, 2, 3
+  ]
+}

@@ -27,19 +27,17 @@ public class FacadePerson {
         Person person = new Person(pDTO);
         cityInfo.addAddress(address);
         address.addPerson(person);
+//        address.setCityInfo(cityInfo);      // testing this
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-
-            /*
-            person.getPhoneList().forEach(el-> {
-                if(el.getId() != 0) {
-                    el = em.find(Phone.class, el.getId());
-                } else {
-                    em.persist(el);
-                }
-            });
-            */
+//            person.getPhoneList().forEach(el-> {
+//                if(el.getId() != 0) {
+//                    el = em.find(Phone.class, el.getId());
+//                } else {
+//                    em.persist(el);
+//                }
+//            });
             em.persist(cityInfo);
             em.persist(address);
             em.persist(person);
