@@ -67,13 +67,11 @@ public class FacadePerson {
 
     public void addAllHobbies(PersonDTO personDTO) {
         EntityManager em = emf.createEntityManager();
-
-
         try {
             Person person = em.find(Person.class, personDTO.getId());
             em.getTransaction().begin();
             personDTO.getHobbyDTOList().forEach(hobbyDTO -> {
-                person.addHobby(new Hobby(hobbyDTO));
+                person.addHobby(em.find(Hobby.class, hobbyDTO.getId()));
             });
             em.merge(person);
             em.getTransaction().commit();
