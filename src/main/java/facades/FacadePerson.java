@@ -116,7 +116,7 @@ public class FacadePerson {
 
     public JsonObject getPersonInfo(PersonDTO personDTO) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("personID", personDTO.getId());
+        jsonObject.addProperty("personId", personDTO.getId());
         jsonObject.addProperty("email", personDTO.getEmail());
         jsonObject.addProperty("firstName", personDTO.getFirstName());
         jsonObject.addProperty("lastName", personDTO.getLastName());
@@ -164,5 +164,38 @@ public class FacadePerson {
             phoneDTOList.add(new PhoneDTO(p));
         }
         return phoneDTOList;
+    }
+
+    public List<PersonDTO> getPersonsWithHobby(HobbyDTO hobbyDTO) {
+        EntityManager em = emf.createEntityManager();
+        TypedQuery<Person> typedQueryPerson
+                = em.createQuery("SELECT p FROM Person p LEFT JOIN p.hobbyList h WHERE h.id=:hobbyId", Person.class);
+        typedQueryPerson.setParameter("hobbyId", hobbyDTO.getId());
+
+        List<Person> personList = typedQueryPerson.getResultList();
+        List<PersonDTO> personDTOList = new ArrayList<>();
+        for (Person p : personList) {
+            personDTOList.add(new PersonDTO(p));
+        }
+        return personDTOList;
+    }
+
+    public PersonDTO updatePerson(long id, String email, String firstName, String lastName) {
+        EntityManager em = emf.createEntityManager();
+        Person person = em.find(Person.class, id);
+
+        person.setEmail(email);
+        person.setFirstName(firstName);
+        person.setLastName(lastName);
+
+        try {
+            em.getTransaction().begin();
+            em.merge(person);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+
+        return new PersonDTO(person);
     }
 }

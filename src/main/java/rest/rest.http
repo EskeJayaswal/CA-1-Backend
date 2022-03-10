@@ -27,7 +27,7 @@ POST http://localhost:8080/ca1_war_exploded/api/person/addhobby
 Content-Type: application/json
 
 {
-  "personId": 22,
+  "personId": 23,
   "hobbyId": 2
 }
 
@@ -50,4 +50,39 @@ Content-Type: application/json
 
 {
   "number": "apiNumber1"
+}
+
+###
+
+GET http://localhost:8080/ca1_war_exploded/api/person/info23
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/ca1_war_exploded/api/person/hobby1
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/ca1_war_exploded/api/person/update23
+Content-Type: application/json
+
+{
+  "email": "Charlie@Chappefar.dk",
+  "firstName": "Charlie",
+  "lastName": "Chaplin",
+  "street": "Nordpolen 2",
+  "additionalInfo": "Ved siden af julemanden",
+  "zipCode": "666",
+  "city": "Juleby",
+  "phone": [
+    {
+      "number": "1684668+",
+      "description": "Job"
+    },
+    {
+      "number": "6761++",
+      "description": "Home"
+    }
+  ]
 }

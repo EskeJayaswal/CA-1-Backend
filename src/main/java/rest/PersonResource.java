@@ -3,9 +3,7 @@ package rest;
 import com.google.gson.*;
 import dtos.*;
 import entities.Phone;
-import facades.FacadeHobby;
-import facades.FacadePerson;
-import facades.FacadePhone;
+import facades.*;
 import utils.EMF_Creator;
 
 import javax.persistence.EntityManagerFactory;
@@ -13,6 +11,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Path("person")
@@ -132,7 +131,6 @@ public class PersonResource {
     public Response getInfoPhone(String jsonContext) {
         JsonObject jsonObject = GSON.fromJson(jsonContext, JsonObject.class);
         String phoneNumber = jsonObject.get("number").getAsString();
-
         PersonDTO personDTO = FACADE.getByPhoneNumber(phoneNumber);
 
         return Response
@@ -140,4 +138,104 @@ public class PersonResource {
                 .entity(GSON.toJson(FACADE.getPersonInfo(personDTO)))
                 .build();
     }
+
+    // Get all info from a person by person ID
+    @Path("info{id}")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+//    @Consumes({MediaType.APPLICATION_JSON})
+    public Response getInfoId(@PathParam("id") long id,String jsonContext) {
+        PersonDTO personDTO = FACADE.getById(id);
+        return Response
+                .ok("SUCCESS")
+                .entity(GSON.toJson(FACADE.getPersonInfo(personDTO)))
+                .build();
+    }
+
+    // Get all persons with a given hobby ID
+    @Path("hobby{hobbyId}")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+//    @Consumes({MediaType.APPLICATION_JSON})
+    public Response getPersonsWithHobby(@PathParam("hobbyId") long hobbyId, String jsonContext) {
+        HobbyDTO hobbyDTO = FacadeHobby.getFacadeHobby(EMF).getHobbyByID(hobbyId);
+        List<PersonDTO> personsWithHobby = FACADE.getPersonsWithHobby(hobbyDTO);
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("hobbyId", hobbyDTO.getId());
+        jsonObject.addProperty("name", hobbyDTO.getName());
+        jsonObject.addProperty("description", hobbyDTO.getDescription());
+        JsonArray personArray = new JsonArray();
+        for (PersonDTO p : personsWithHobby) {
+            JsonObject pObject = new JsonObject();
+            pObject.addProperty("personId", p.getId());
+            pObject.addProperty("email", p.getEmail());
+            pObject.addProperty("firstName", p.getFirstName());
+            pObject.addProperty("lastName", p.getLastName());
+            personArray.add(pObject);
+        }
+        jsonObject.add("person", personArray);
+
+        return Response
+                .ok("SUCCESS")
+                .entity(GSON.toJson(jsonObject))
+                .build();
+    }
+
+    // Change a persons name by ID
+    @Path("update{id}")
+    @PUT
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response updatePerson(@PathParam("id") long id, String jsonContext) {
+        JsonObject jsonObject = GSON.fromJson(jsonContext, JsonObject.class);
+//        PersonDTO personDTO = FACADE.getById(id);
+
+        // CityInfo
+        FacadeCityInfo.getFacadeCityInfo(EMF).updateCityInfo(id,
+                jsonObject.get("zipCode").getAsString(),
+                jsonObject.get("city").getAsString());
+
+        // Address
+        FacadeAddress.getFacadeAddress(EMF).updateAddress(id,
+                jsonObject.get("street").getAsString(),
+                jsonObject.get("additionalInfo").getAsString());
+
+        // Person
+        PersonDTO personDTO = FACADE.updatePerson(id,
+                jsonObject.get("email").getAsString(),
+                jsonObject.get("firstName").getAsString(),
+                jsonObject.get("lastName").getAsString());
+
+        // Phone
+        FacadePhone.getFacadePhone(EMF).updatePhone(id, jsonObject.get("phone").getAsJsonArray());
+
+        return Response
+                .ok("SUCCESS")
+                .entity(GSON.toJson(FACADE.getPersonInfo(personDTO)))
+                .build();
+    }
 }
+
+
+
+
+//    HashMap<String, String> personValues = new HashMap<String, String>();
+//        if (jsonObject.get("email") != null)
+//            personValues.put("email", jsonObject.get("email").getAsString());
+//        if (jsonObject.get("firstName") != null)
+//            personValues.put("firstName", jsonObject.get("firstName").getAsString());
+//        if (jsonObject.get("lastName") != null)
+//            personValues.put("lastName", jsonObject.get("lastName").getAsString());
+//
+//        HashMap<String, String> addressValues = new HashMap<String, String>();
+//        if (jsonObject.get("street") != null)
+//            addressValues.put("street", jsonObject.get("street").getAsString());
+//        if (jsonObject.get("additionalInfo") != null)
+//            addressValues.put("additionalInfo", jsonObject.get("additionalInfo").getAsString());
+//
+//        HashMap<String, String> cityInfoValues = new HashMap<String, String>();
+//        if (jsonObject.get("zipCode") != null)
+//            cityInfoValues.put("zipCode", jsonObject.get("zipCode").getAsString());
+//        if (jsonObject.get("city") != null)
+//            cityInfoValues.put("city", jsonObject.get("city").getAsString());
