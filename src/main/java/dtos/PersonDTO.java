@@ -2,6 +2,7 @@ package dtos;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import entities.Hobby;
 import entities.Person;
 
 import java.util.ArrayList;
@@ -31,6 +32,9 @@ public class PersonDTO {
         this.firstName = person.getFirstName();
         this.lastName = person.getLastName();
         this.addressDTO = new AddressDTO(person.getAddress());
+        for (Hobby h : person.getHobbyList()) {
+            this.hobbyDTOList.add(new HobbyDTO(h));
+        }
     }
 
     public static List<PersonDTO> getDtos(List<Person> persons) {
@@ -102,6 +106,14 @@ public class PersonDTO {
     public void addPhoneDTO(PhoneDTO phoneDTO) {
         this.phoneList.add(phoneDTO);
         phoneDTO.setPersonDTO(this);
+    }
+
+    public void updatePhoneDTOId(PhoneDTO phoneDTO) {
+        for (PhoneDTO p : phoneList) {
+            if (p.getNumber().equals(phoneDTO.getNumber())) {
+                p.setId(phoneDTO.getId());
+            }
+        }
     }
 
     @Override

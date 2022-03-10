@@ -1,10 +1,8 @@
 package rest;
 
 import com.google.gson.*;
-import dtos.AddressDTO;
-import dtos.CityInfoDTO;
-import dtos.PersonDTO;
-import dtos.PhoneDTO;
+import dtos.*;
+import entities.Phone;
 import facades.FacadeHobby;
 import facades.FacadePerson;
 import facades.FacadePhone;
@@ -31,6 +29,7 @@ public class PersonResource {
     }
 
     // TODO: Add checks to ensure correct data is provided
+    // Add new persons with all relevant information
     @Path("addperson")
     @POST
     @Produces({MediaType.APPLICATION_JSON})
@@ -70,16 +69,18 @@ public class PersonResource {
         FacadePhone facadePhone = FacadePhone.getFacadePhone(EMF);
         for (PhoneDTO phoneDTO : phoneDTOList) {
             persistedPerson.addPhoneDTO(phoneDTO);
-            facadePhone.create(phoneDTO);
+            PhoneDTO persistedPhone = facadePhone.create(phoneDTO);     // has a database id
+            persistedPerson.updatePhoneDTOId(persistedPhone);           // update persons phoneDTO with database id
         }
 
-        return Response      // Does not return valid phone ID's
+        return Response
                 .ok("SUCCESS")
                 .entity(GSON.toJson(persistedPerson.toJson()))
                 .build();
     }
 
     // TODO: Add checks to ensure correct data is provided
+    // Add single hobby to person with the persons ID
     @Path("addhobby")
     @POST
     @Produces({MediaType.APPLICATION_JSON})
@@ -95,12 +96,11 @@ public class PersonResource {
                 .ok("SUCCESS")
                 .entity("Added hobby id '"+ hobbyId +"' to person id '"+ personId +"'")
                 .build();
-
-
     }
 
     // TODO: Add checks to ensure correct data is provided
-    @Path("addallhobbies")
+    // Add multiple hobbies to a person with the persons ID
+    @Path("addhobbies")
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
@@ -121,6 +121,23 @@ public class PersonResource {
         return Response
                 .ok("SUCCESS")
                 .entity("Added '"+ hobbyArray.size() +"' hobbies to person id '"+ personId +"'")
+                .build();
+    }
+
+    // Get all info from a person by phone number
+    @Path("infophone")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response getInfoPhone(String jsonContext) {
+        JsonObject jsonObject = GSON.fromJson(jsonContext, JsonObject.class);
+        String phoneNumber = jsonObject.get("number").getAsString();
+
+        PersonDTO personDTO = FACADE.getByPhoneNumber(phoneNumber);
+
+        return Response
+                .ok("SUCCESS")
+                .entity(GSON.toJson(FACADE.getPersonInfo(personDTO)))
                 .build();
     }
 }
