@@ -27,6 +27,8 @@ public class PersonResource {
         return "{\"count\":" + FACADE.getPersonCount() + "}";
     }
 
+
+
     // TODO: Add checks to ensure correct data is provided
     // Add new persons with all relevant information
     @Path("addperson")
@@ -34,48 +36,48 @@ public class PersonResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public Response addPerson(String jsonContext) {
-        JsonObject jsonObject = GSON.fromJson(jsonContext, JsonObject.class);
+        PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
+        PersonDTO newPersonDTO = FACADE.create(personDTO);
 
-        // Person
-        String email = jsonObject.get("email").getAsString();
-        String firstName = jsonObject.get("firstName").getAsString();
-        String lastName = jsonObject.get("lastName").getAsString();
+//        JsonObject jsonObject = GSON.fromJson(jsonContext, JsonObject.class);
+//
+//        // Person
+//        String email = jsonObject.get("email").getAsString();
+//        String firstName = jsonObject.get("firstName").getAsString();
+//        String lastName = jsonObject.get("lastName").getAsString();
+//
+//        // Address
+//        String street = jsonObject.get("street").getAsString();
+//        String additionalInfo = jsonObject.get("additionalInfo").getAsString();
+//
+//        // CityInfo
+//        String zipCode = jsonObject.get("zipCode").getAsString();
+//        String city = jsonObject.get("city").getAsString();
+//
+//        // Phone
+//        List<PhoneDTO> phoneDTOList = new ArrayList<>();
+//        JsonArray phoneArray = jsonObject.getAsJsonArray("phone");
+//        for (JsonElement phone : phoneArray) {
+//            JsonObject phoneObject = GSON.fromJson(phone.toString(), JsonObject.class);
+//
+//            String number = phoneObject.get("number").getAsString();
+//            String description = phoneObject.get("description").getAsString();
+//            phoneDTOList.add(new PhoneDTO(number, description));
+//        }
+//
+//        CityInfoDTO cityInfoDTO = new CityInfoDTO(zipCode, city);
+//        AddressDTO addressDTO = new AddressDTO(street, additionalInfo, cityInfoDTO);
+//        PersonDTO personDTO = new PersonDTO(email, firstName, lastName, addressDTO);
+//        PersonDTO persistedPerson = FACADE.create(personDTO);
+//
+//        FacadePhone facadePhone = FacadePhone.getFacadePhone(EMF);
+//        for (PhoneDTO phoneDTO : phoneDTOList) {
+//            persistedPerson.addPhoneDTO(phoneDTO);
+//            PhoneDTO persistedPhone = facadePhone.create(phoneDTO);     // has a database id
+//            persistedPerson.updatePhoneDTOId(persistedPhone);           // update persons phoneDTO with database id
+//        }
+        return Response.ok().entity(GSON.toJson(newPersonDTO)).build();
 
-        // Address
-        String street = jsonObject.get("street").getAsString();
-        String additionalInfo = jsonObject.get("additionalInfo").getAsString();
-
-        // CityInfo
-        String zipCode = jsonObject.get("zipCode").getAsString();
-        String city = jsonObject.get("city").getAsString();
-
-        // Phone
-        List<PhoneDTO> phoneDTOList = new ArrayList<>();
-        JsonArray phoneArray = jsonObject.getAsJsonArray("phone");
-        for (JsonElement phone : phoneArray) {
-            JsonObject phoneObject = GSON.fromJson(phone.toString(), JsonObject.class);
-
-            String number = phoneObject.get("number").getAsString();
-            String description = phoneObject.get("description").getAsString();
-            phoneDTOList.add(new PhoneDTO(number, description));
-        }
-
-        CityInfoDTO cityInfoDTO = new CityInfoDTO(zipCode, city);
-        AddressDTO addressDTO = new AddressDTO(street, additionalInfo, cityInfoDTO);
-        PersonDTO personDTO = new PersonDTO(email, firstName, lastName, addressDTO);
-        PersonDTO persistedPerson = FACADE.create(personDTO);
-
-        FacadePhone facadePhone = FacadePhone.getFacadePhone(EMF);
-        for (PhoneDTO phoneDTO : phoneDTOList) {
-            persistedPerson.addPhoneDTO(phoneDTO);
-            PhoneDTO persistedPhone = facadePhone.create(phoneDTO);     // has a database id
-            persistedPerson.updatePhoneDTOId(persistedPhone);           // update persons phoneDTO with database id
-        }
-
-        return Response
-                .ok("SUCCESS")
-                .entity(GSON.toJson(persistedPerson.toJson()))
-                .build();
     }
 
     // TODO: Add checks to ensure correct data is provided
@@ -152,6 +154,10 @@ public class PersonResource {
                 .build();
     }
 
+
+
+
+
     // Get all persons with a given hobby ID
     @Path("hobby{hobbyId}")
     @GET
@@ -215,6 +221,84 @@ public class PersonResource {
                 .entity(GSON.toJson(FACADE.getPersonInfo(personDTO)))
                 .build();
     }
+
+
+
+
+
+    // TESTING:
+
+
+    @Path("{id}")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getInfoById(@PathParam("id") long id) {
+        PersonDTO personDTO = FACADE.getById(id);
+        return Response
+                .ok("SUCCESS")
+                .entity(GSON.toJson(personDTO))
+                .build();
+    }
+
+
+
+
+
+    @POST
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response create(String jsonContext) {
+        PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
+        PersonDTO newPersonDTO = FACADE.create(personDTO);
+
+
+        return Response.ok().entity(GSON.toJson(newPersonDTO)).build();
+
+    }
+
+
+//    @PUT
+//    @Path("{id}")
+//    @Produces({MediaType.APPLICATION_JSON})
+//    @Consumes({MediaType.APPLICATION_JSON})
+//    public Response update(@PathParam("id") int id, String content) throws EntityNotFoundException {
+//        ParentDTO pdto = GSON.fromJson(content, ParentDTO.class);
+//        pdto.setId(id);
+//        ParentDTO updated = FACADE.update(pdto);
+//        return Response.ok().entity(GSON.toJson(updated)).build();
+//    }
+
+
+    // Change a persons name by ID
+    @Path("{id}")
+    @PUT
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response update(@PathParam("id") long id, String jsonContext) {
+        PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
+        personDTO.setId(id);
+        PersonDTO updatedPersonDTO = FACADE.update(personDTO);
+
+
+
+        return Response
+                .ok("SUCCESS")
+                .entity(GSON.toJson(updatedPersonDTO))
+                .build();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

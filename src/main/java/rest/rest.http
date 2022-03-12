@@ -54,7 +54,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8080/ca1_war_exploded/api/person/info23
+GET http://localhost:8080/ca1_war_exploded/api/person/info1
 Content-Type: application/json
 
 ###
@@ -83,6 +83,82 @@ Content-Type: application/json
     {
       "number": "6761++",
       "description": "Home"
+    }
+  ]
+}
+
+###
+
+POST http://localhost:8080/ca1_war_exploded/api/person/
+Content-Type: application/json
+
+
+{
+
+  "email": "123@mail.dk",
+  "firstName": "GG",
+  "lastName": "GG",
+  "addressDTO": {
+
+    "street": "Dalgade 13",
+    "additionalInfo": "sttv",
+    "cityInfoDTO": {
+
+      "zipCode": "4000",
+      "city": "Dalum"
+    }
+  },
+  "phoneList": [{
+    "number": "12345678",
+    "description": "Work"
+  },
+    {
+      "number": "87654321",
+      "description": "Home"
+    }
+  ],
+  "hobbyDTOList": [
+    {
+      "id": 1
+    }
+  ]
+}
+
+
+
+
+###
+
+GET http://localhost:8080/ca1_war_exploded/api/person/11
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/ca1_war_exploded/api/person/8
+Content-Type: application/json
+
+{
+
+  "email": "Ekko@mail.dk",
+  "firstName": "Erling",
+  "lastName": "Eriksen",
+  "addressDTO": {
+
+    "street": "Elgade 88",
+    "additionalInfo": "5 th",
+    "cityInfoDTO": {
+
+      "zipCode": "5000",
+      "city": "Esbjerg"
+    }
+  },
+  "phoneList": [{
+    "number": "12345678",
+    "description": "Cell"
+  }],
+  "hobbyDTOList": [
+    {
+      "id": 1
     }
   ]
 }

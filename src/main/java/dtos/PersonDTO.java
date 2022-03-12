@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import entities.Hobby;
 import entities.Person;
+import entities.Phone;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,9 @@ public class PersonDTO {
         this.firstName = person.getFirstName();
         this.lastName = person.getLastName();
         this.addressDTO = new AddressDTO(person.getAddress());
+        for (Phone phone : person.getPhoneList()) {
+            this.phoneList.add(new PhoneDTO(phone));
+        }
         for (Hobby h : person.getHobbyList()) {
             this.hobbyDTOList.add(new HobbyDTO(h));
         }
@@ -42,6 +46,8 @@ public class PersonDTO {
         persons.forEach(p -> pDtos.add(new PersonDTO(p)));
         return pDtos;
     }
+
+
 
     public long getId() {
         return id;
@@ -116,37 +122,39 @@ public class PersonDTO {
         }
     }
 
-    @Override
-    public String toString() {
-        return "PersonDTO{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "PersonDTO{" +
+//                "id=" + id +
+//                ", email='" + email + '\'' +
+//                ", firstName='" + firstName + '\'' +
+//                ", lastName='" + lastName + '\'' +
+//                '}';
+//    }
 
-    public JsonObject toJson() {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("personID", getId());
-        jsonObject.addProperty("email", getEmail());
-        jsonObject.addProperty("firstName", getFirstName());
-        jsonObject.addProperty("lastName", getLastName());
-        jsonObject.addProperty("addressId", getAddressDTO().getId());
-        jsonObject.addProperty("street", getAddressDTO().getStreet());
-        jsonObject.addProperty("additionalInfo", getAddressDTO().getAdditionalInfo());
-        jsonObject.addProperty("cityInfoId", getAddressDTO().getCityInfoDTO().getId());
-        jsonObject.addProperty("zipCode", getAddressDTO().getCityInfoDTO().getZipCode());
-        jsonObject.addProperty("city", getAddressDTO().getCityInfoDTO().getCity());
-        JsonArray jsonArray = new JsonArray();
-        for (PhoneDTO p : getPhoneList()) {
-            JsonObject pObject = new JsonObject();
-            pObject.addProperty("phoneId", p.getId());
-            pObject.addProperty("number", p.getNumber());
-            pObject.addProperty("description", p.getDescription());
-            jsonArray.add(pObject);
-        }
-        jsonObject.add("phone", jsonArray);
-        return jsonObject;
-    }
+
+
+//    public JsonObject toJson() {
+//        JsonObject jsonObject = new JsonObject();
+//        jsonObject.addProperty("personID", getId());
+//        jsonObject.addProperty("email", getEmail());
+//        jsonObject.addProperty("firstName", getFirstName());
+//        jsonObject.addProperty("lastName", getLastName());
+//        jsonObject.addProperty("addressId", getAddressDTO().getId());
+//        jsonObject.addProperty("street", getAddressDTO().getStreet());
+//        jsonObject.addProperty("additionalInfo", getAddressDTO().getAdditionalInfo());
+//        jsonObject.addProperty("cityInfoId", getAddressDTO().getCityInfoDTO().getId());
+//        jsonObject.addProperty("zipCode", getAddressDTO().getCityInfoDTO().getZipCode());
+//        jsonObject.addProperty("city", getAddressDTO().getCityInfoDTO().getCity());
+//        JsonArray jsonArray = new JsonArray();
+//        for (PhoneDTO p : getPhoneList()) {
+//            JsonObject pObject = new JsonObject();
+//            pObject.addProperty("phoneId", p.getId());
+//            pObject.addProperty("number", p.getNumber());
+//            pObject.addProperty("description", p.getDescription());
+//            jsonArray.add(pObject);
+//        }
+//        jsonObject.add("phone", jsonArray);
+//        return jsonObject;
+//    }
 }

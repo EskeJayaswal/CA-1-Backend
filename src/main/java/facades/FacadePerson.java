@@ -2,9 +2,7 @@ package facades;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import dtos.HobbyDTO;
-import dtos.PersonDTO;
-import dtos.PhoneDTO;
+import dtos.*;
 import entities.*;
 
 import javax.persistence.EntityManager;
@@ -17,7 +15,8 @@ public class FacadePerson {
     private static FacadePerson instance;
     private static EntityManagerFactory emf;
 
-    public FacadePerson() {}
+    public FacadePerson() {
+    }
 
     public static FacadePerson getFacadePerson(EntityManagerFactory _emf) {
         if (instance == null) {
@@ -30,29 +29,37 @@ public class FacadePerson {
     public PersonDTO create(PersonDTO pDTO) {
         CityInfo cityInfo = new CityInfo(pDTO.getAddressDTO().getCityInfoDTO());
         Address address = new Address(pDTO.getAddressDTO());
+
         Person person = new Person(pDTO);
+
+
+        pDTO.getPhoneList().forEach(phoneDTO -> {
+            Phone phone = new Phone(phoneDTO);
+            person.addPhone(phone);
+        });
+
+
         cityInfo.addAddress(address);
         address.addPerson(person);
 //        address.setCityInfo(cityInfo);      // testing this
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-//            person.getPhoneList().forEach(el-> {
-//                if(el.getId() != 0) {
-//                    el = em.find(Phone.class, el.getId());
-//                } else {
-//                    em.persist(el);
-//                }
-//            });
+
+
             em.persist(cityInfo);
             em.persist(address);
             em.persist(person);
+            person.getPhoneList().forEach(em::persist);
+
+
             em.getTransaction().commit();
         } finally {
             em.close();
         }
         return new PersonDTO(person);
     }
+
 
     public void addHobby(long personID, long hobbyID) {
         EntityManager em = emf.createEntityManager();
@@ -113,6 +120,7 @@ public class FacadePerson {
             em.close();
         }
     }
+
 
     public JsonObject getPersonInfo(PersonDTO personDTO) {
         JsonObject jsonObject = new JsonObject();
@@ -198,4 +206,40 @@ public class FacadePerson {
 
         return new PersonDTO(person);
     }
+
+
+    public PersonDTO update(PersonDTO personDTO) {
+        EntityManager em = emf.createEntityManager();
+
+        Person person = em.find(Person.class, personDTO.getId());
+        Address address = em.find(Address.class, person.getAddress().getId());
+        CityInfo cityInfo = em.find(CityInfo.class, address.getCityInfo().getId());
+
+        //TypedQuery
+
+
+
+
+
+
+        personDTO.getPhoneList().forEach(phoneDTO -> {
+            Phone phone = new Phone(phoneDTO);
+            person.addPhone(phone);
+            phone.setId(phoneDTO.getId());
+        });
+
+
+        em.getTransaction().begin();
+        em.merge(cityInfo);
+        em.merge(address);
+        em.merge(person);
+        person.getPhoneList().forEach(em::merge);
+        em.getTransaction().commit();
+
+
+
+        return new PersonDTO(person);
+    }
+
+
 }
