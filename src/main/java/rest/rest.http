@@ -54,7 +54,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8080/ca1_war_exploded/api/person/info1
+GET http://localhost:8080/ca1_war_exploded/api/person/info23
 Content-Type: application/json
 
 ###
@@ -87,7 +87,10 @@ Content-Type: application/json
   ]
 }
 
-###
+
+
+
+### New testing
 
 POST http://localhost:8080/ca1_war_exploded/api/person/
 Content-Type: application/json
@@ -95,26 +98,26 @@ Content-Type: application/json
 
 {
 
-  "email": "123@mail.dk",
-  "firstName": "GG",
-  "lastName": "GG",
+  "email": "ghdghgdf@mail.dk",
+  "firstName": "VV",
+  "lastName": "VV",
   "addressDTO": {
 
-    "street": "Dalgade 13",
-    "additionalInfo": "sttv",
+    "street": "Skolevej 44",
+    "additionalInfo": "ingen",
     "cityInfoDTO": {
 
-      "zipCode": "4000",
-      "city": "Dalum"
+      "zipCode": "2500",
+      "city": "Valby"
     }
   },
   "phoneList": [{
-    "number": "12345678",
-    "description": "Work"
+    "number": "23232323",
+    "description": "Hjem"
   },
     {
-      "number": "87654321",
-      "description": "Home"
+      "number": "18357413",
+      "description": "Arbejde"
     }
   ],
   "hobbyDTOList": [
@@ -129,33 +132,38 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8080/ca1_war_exploded/api/person/11
+GET http://localhost:8080/ca1_war_exploded/api/person/12
 Content-Type: application/json
 
 ###
 
-PUT http://localhost:8080/ca1_war_exploded/api/person/8
+PUT http://localhost:8080/ca1_war_exploded/api/person/12
 Content-Type: application/json
 
 {
 
-  "email": "Ekko@mail.dk",
-  "firstName": "Erling",
-  "lastName": "Eriksen",
+  "email": "ghdghgdf@mail.dk",
+  "firstName": "Viggo",
+  "lastName": "Volvo",
   "addressDTO": {
 
-    "street": "Elgade 88",
-    "additionalInfo": "5 th",
+    "street": "Skolevej 44",
+    "additionalInfo": "ingen",
     "cityInfoDTO": {
 
-      "zipCode": "5000",
-      "city": "Esbjerg"
+      "zipCode": "2500",
+      "city": "Valby"
     }
   },
   "phoneList": [{
-    "number": "12345678",
-    "description": "Cell"
-  }],
+    "number": "23232323",
+    "description": "Hjem"
+  },
+    {
+      "number": "18357413",
+      "description": "Arbejde"
+    }
+  ],
   "hobbyDTOList": [
     {
       "id": 1

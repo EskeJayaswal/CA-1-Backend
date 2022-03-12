@@ -27,8 +27,6 @@ public class PersonResource {
         return "{\"count\":" + FACADE.getPersonCount() + "}";
     }
 
-
-
     // TODO: Add checks to ensure correct data is provided
     // Add new persons with all relevant information
     @Path("addperson")
@@ -36,48 +34,48 @@ public class PersonResource {
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public Response addPerson(String jsonContext) {
-        PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
-        PersonDTO newPersonDTO = FACADE.create(personDTO);
+        JsonObject jsonObject = GSON.fromJson(jsonContext, JsonObject.class);
 
-//        JsonObject jsonObject = GSON.fromJson(jsonContext, JsonObject.class);
-//
-//        // Person
-//        String email = jsonObject.get("email").getAsString();
-//        String firstName = jsonObject.get("firstName").getAsString();
-//        String lastName = jsonObject.get("lastName").getAsString();
-//
-//        // Address
-//        String street = jsonObject.get("street").getAsString();
-//        String additionalInfo = jsonObject.get("additionalInfo").getAsString();
-//
-//        // CityInfo
-//        String zipCode = jsonObject.get("zipCode").getAsString();
-//        String city = jsonObject.get("city").getAsString();
-//
-//        // Phone
-//        List<PhoneDTO> phoneDTOList = new ArrayList<>();
-//        JsonArray phoneArray = jsonObject.getAsJsonArray("phone");
-//        for (JsonElement phone : phoneArray) {
-//            JsonObject phoneObject = GSON.fromJson(phone.toString(), JsonObject.class);
-//
-//            String number = phoneObject.get("number").getAsString();
-//            String description = phoneObject.get("description").getAsString();
-//            phoneDTOList.add(new PhoneDTO(number, description));
-//        }
-//
-//        CityInfoDTO cityInfoDTO = new CityInfoDTO(zipCode, city);
-//        AddressDTO addressDTO = new AddressDTO(street, additionalInfo, cityInfoDTO);
-//        PersonDTO personDTO = new PersonDTO(email, firstName, lastName, addressDTO);
-//        PersonDTO persistedPerson = FACADE.create(personDTO);
-//
-//        FacadePhone facadePhone = FacadePhone.getFacadePhone(EMF);
-//        for (PhoneDTO phoneDTO : phoneDTOList) {
-//            persistedPerson.addPhoneDTO(phoneDTO);
-//            PhoneDTO persistedPhone = facadePhone.create(phoneDTO);     // has a database id
-//            persistedPerson.updatePhoneDTOId(persistedPhone);           // update persons phoneDTO with database id
-//        }
-        return Response.ok().entity(GSON.toJson(newPersonDTO)).build();
+        // Person
+        String email = jsonObject.get("email").getAsString();
+        String firstName = jsonObject.get("firstName").getAsString();
+        String lastName = jsonObject.get("lastName").getAsString();
 
+        // Address
+        String street = jsonObject.get("street").getAsString();
+        String additionalInfo = jsonObject.get("additionalInfo").getAsString();
+
+        // CityInfo
+        String zipCode = jsonObject.get("zipCode").getAsString();
+        String city = jsonObject.get("city").getAsString();
+
+        // Phone
+        List<PhoneDTO> phoneDTOList = new ArrayList<>();
+        JsonArray phoneArray = jsonObject.getAsJsonArray("phone");
+        for (JsonElement phone : phoneArray) {
+            JsonObject phoneObject = GSON.fromJson(phone.toString(), JsonObject.class);
+
+            String number = phoneObject.get("number").getAsString();
+            String description = phoneObject.get("description").getAsString();
+            phoneDTOList.add(new PhoneDTO(number, description));
+        }
+
+        CityInfoDTO cityInfoDTO = new CityInfoDTO(zipCode, city);
+        AddressDTO addressDTO = new AddressDTO(street, additionalInfo, cityInfoDTO);
+        PersonDTO personDTO = new PersonDTO(email, firstName, lastName, addressDTO);
+        PersonDTO persistedPerson = FACADE.create(personDTO);
+
+        FacadePhone facadePhone = FacadePhone.getFacadePhone(EMF);
+        for (PhoneDTO phoneDTO : phoneDTOList) {
+            persistedPerson.addPhoneDTO(phoneDTO);
+            PhoneDTO persistedPhone = facadePhone.create(phoneDTO);     // has a database id
+            persistedPerson.updatePhoneDTOId(persistedPhone);           // update persons phoneDTO with database id
+        }
+
+        return Response
+                .ok("SUCCESS")
+                .entity(GSON.toJson(persistedPerson.toJson()))
+                .build();
     }
 
     // TODO: Add checks to ensure correct data is provided
@@ -153,10 +151,6 @@ public class PersonResource {
                 .entity(GSON.toJson(FACADE.getPersonInfo(personDTO)))
                 .build();
     }
-
-
-
-
 
     // Get all persons with a given hobby ID
     @Path("hobby{hobbyId}")
@@ -243,7 +237,6 @@ public class PersonResource {
 
 
 
-
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
@@ -257,19 +250,7 @@ public class PersonResource {
     }
 
 
-//    @PUT
-//    @Path("{id}")
-//    @Produces({MediaType.APPLICATION_JSON})
-//    @Consumes({MediaType.APPLICATION_JSON})
-//    public Response update(@PathParam("id") int id, String content) throws EntityNotFoundException {
-//        ParentDTO pdto = GSON.fromJson(content, ParentDTO.class);
-//        pdto.setId(id);
-//        ParentDTO updated = FACADE.update(pdto);
-//        return Response.ok().entity(GSON.toJson(updated)).build();
-//    }
-
-
-    // Change a persons name by ID
+    // Update by id. OBS: Can't add another phone number og remove one with this method.
     @Path("{id}")
     @PUT
     @Produces({MediaType.APPLICATION_JSON})
@@ -278,7 +259,6 @@ public class PersonResource {
         PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
         personDTO.setId(id);
         PersonDTO updatedPersonDTO = FACADE.update(personDTO);
-
 
 
         return Response
@@ -302,24 +282,3 @@ public class PersonResource {
 }
 
 
-
-
-//    HashMap<String, String> personValues = new HashMap<String, String>();
-//        if (jsonObject.get("email") != null)
-//            personValues.put("email", jsonObject.get("email").getAsString());
-//        if (jsonObject.get("firstName") != null)
-//            personValues.put("firstName", jsonObject.get("firstName").getAsString());
-//        if (jsonObject.get("lastName") != null)
-//            personValues.put("lastName", jsonObject.get("lastName").getAsString());
-//
-//        HashMap<String, String> addressValues = new HashMap<String, String>();
-//        if (jsonObject.get("street") != null)
-//            addressValues.put("street", jsonObject.get("street").getAsString());
-//        if (jsonObject.get("additionalInfo") != null)
-//            addressValues.put("additionalInfo", jsonObject.get("additionalInfo").getAsString());
-//
-//        HashMap<String, String> cityInfoValues = new HashMap<String, String>();
-//        if (jsonObject.get("zipCode") != null)
-//            cityInfoValues.put("zipCode", jsonObject.get("zipCode").getAsString());
-//        if (jsonObject.get("city") != null)
-//            cityInfoValues.put("city", jsonObject.get("city").getAsString());

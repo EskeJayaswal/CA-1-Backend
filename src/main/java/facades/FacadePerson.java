@@ -15,8 +15,7 @@ public class FacadePerson {
     private static FacadePerson instance;
     private static EntityManagerFactory emf;
 
-    public FacadePerson() {
-    }
+    public FacadePerson() {}
 
     public static FacadePerson getFacadePerson(EntityManagerFactory _emf) {
         if (instance == null) {
@@ -29,9 +28,7 @@ public class FacadePerson {
     public PersonDTO create(PersonDTO pDTO) {
         CityInfo cityInfo = new CityInfo(pDTO.getAddressDTO().getCityInfoDTO());
         Address address = new Address(pDTO.getAddressDTO());
-
         Person person = new Person(pDTO);
-
 
         pDTO.getPhoneList().forEach(phoneDTO -> {
             Phone phone = new Phone(phoneDTO);
@@ -41,17 +38,15 @@ public class FacadePerson {
 
         cityInfo.addAddress(address);
         address.addPerson(person);
-//        address.setCityInfo(cityInfo);      // testing this
+
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-
 
             em.persist(cityInfo);
             em.persist(address);
             em.persist(person);
             person.getPhoneList().forEach(em::persist);
-
 
             em.getTransaction().commit();
         } finally {
@@ -59,7 +54,6 @@ public class FacadePerson {
         }
         return new PersonDTO(person);
     }
-
 
     public void addHobby(long personID, long hobbyID) {
         EntityManager em = emf.createEntityManager();
@@ -120,7 +114,6 @@ public class FacadePerson {
             em.close();
         }
     }
-
 
     public JsonObject getPersonInfo(PersonDTO personDTO) {
         JsonObject jsonObject = new JsonObject();
@@ -208,25 +201,38 @@ public class FacadePerson {
     }
 
 
-    public PersonDTO update(PersonDTO personDTO) {
+    public PersonDTO update(PersonDTO pDTO) {
         EntityManager em = emf.createEntityManager();
 
-        Person person = em.find(Person.class, personDTO.getId());
+        // Read entities from DB
+        Person person = em.find(Person.class, pDTO.getId());
         Address address = em.find(Address.class, person.getAddress().getId());
         CityInfo cityInfo = em.find(CityInfo.class, address.getCityInfo().getId());
 
-        //TypedQuery
+        TypedQuery<Phone> tq = em.createQuery("SELECT p FROM Phone p  WHERE p.person.id = " + person.getId(), Phone.class);
+        List<Phone> phoneList = tq.getResultList();
 
 
+        // Check for updates on Person
+        person.setEmail(pDTO.getEmail());
+        person.setFirstName(pDTO.getFirstName());
+        person.setFirstName(pDTO.getLastName());
+
+        // Check for updates on Address
+        address.setStreet(pDTO.getAddressDTO().getStreet());
+        address.setAdditionalInfo(pDTO.getAddressDTO().getAdditionalInfo());
+
+        // Check for updates on CityInfo
+        cityInfo.setZipCode(pDTO.getAddressDTO().getCityInfoDTO().getZipCode());
+        cityInfo.setCity(pDTO.getAddressDTO().getCityInfoDTO().getCity());
+
+        // Check for updates on every phone number.
+        for (int i = 0; i < pDTO.getPhoneList().size(); i++) {
+            phoneList.get(i).setNumber(pDTO.getPhoneList().get(i).getNumber());
+            phoneList.get(i).setDescription(pDTO.getPhoneList().get(i).getDescription());
+        }
 
 
-
-
-        personDTO.getPhoneList().forEach(phoneDTO -> {
-            Phone phone = new Phone(phoneDTO);
-            person.addPhone(phone);
-            phone.setId(phoneDTO.getId());
-        });
 
 
         em.getTransaction().begin();
