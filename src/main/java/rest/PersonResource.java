@@ -28,8 +28,6 @@ public class PersonResource {
         return "{\"count\":" + FACADE.getPersonCount() + "}";
     }
 
-
-
     @Path("{id}")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -40,7 +38,6 @@ public class PersonResource {
                 .entity(GSON.toJson(personDTO))
                 .build();
     }
-
 
     // Get all persons with a given hobby ID
     @Path("hobby/{id}")
@@ -55,24 +52,17 @@ public class PersonResource {
                 .build();
     }
 
-
-
-
-
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
     public Response create(String jsonContext) throws EntityAlreadyExistsException {
         PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
-
         PersonDTO newPersonDTO = FACADE.create(personDTO);
 
         return Response.ok().entity(GSON.toJson(newPersonDTO)).build();
-
     }
 
-
-    // Update by id. OBS: Can't add another phone number og remove one with this method.
+    // Update by id
     @Path("{id}")
     @PUT
     @Produces({MediaType.APPLICATION_JSON})
@@ -102,10 +92,6 @@ public class PersonResource {
         PersonDTO personDTO = FACADE.getByPhoneNumber(number);
         return Response.ok().entity(GSON.toJson(personDTO)).build();
     }
-
-
-
-
 }
 
 
