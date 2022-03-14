@@ -51,7 +51,7 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:8080/ca1_war_exploded/api/person/19
+PUT http://localhost:8080/ca1_war_exploded/api/person/20
 Content-Type: application/json
 
 {
@@ -84,6 +84,9 @@ Content-Type: application/json
     },
     {
       "id": 2
+    },
+    {
+      "id": 3
     }
   ]
 }
@@ -99,6 +102,8 @@ Content-Type: application/json
 PUT http://localhost:8080/ca1_war_exploded/api/person/removehobbies/20
 Content-Type: application/json
 
+###
 
-
+GET http://localhost:8080/ca1_war_exploded/api/person/hobby/1
+Content-Type: application/json
 
