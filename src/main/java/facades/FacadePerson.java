@@ -1,9 +1,12 @@
 package facades;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import dtos.*;
 import entities.*;
+import errorhandling.EntityAlreadyExistsException;
+import errorhandling.EntityNotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -25,7 +28,7 @@ public class FacadePerson {
         return instance;
     }
 
-    public PersonDTO create(PersonDTO personDTO) {
+    public PersonDTO create(PersonDTO personDTO) throws EntityAlreadyExistsException{
         EntityManager em = emf.createEntityManager();
 
         CityInfo cityInfo = new CityInfo(personDTO.getAddressDTO().getCityInfoDTO());
@@ -33,9 +36,12 @@ public class FacadePerson {
         Person person = new Person(personDTO);
 
         // Loop through all phoneDTOs and add them to the new person entity.
-        personDTO.getPhoneList().forEach(phoneDTO -> {
+        for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {
+            if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber()))
+                throw new EntityAlreadyExistsException("Phone number: "+ phoneDTO.getNumber() +" already exists in the database");
             person.addPhone(new Phone(phoneDTO));
-        });
+        }
+
 
         // Loop through all hobbyDTOs and add them to the new person entity. OBS: we don't create new hobby entities
         // but we find the existing hobbies from the database and pair them with the person.
@@ -65,18 +71,22 @@ public class FacadePerson {
     }
 
 
-    public PersonDTO getById(long id) {
+    public PersonDTO getById(long id) throws EntityNotFoundException {
         EntityManager em = emf.createEntityManager();
         Person person = em.find(Person.class, id);
-        // TODO: if null -> Throw custom exception
+        if (person == null)
+            throw new EntityNotFoundException("The Parent entity with ID: '"+id+"' was not found");
         return new PersonDTO(person);
     }
 
 
-    public PersonDTO getByPhoneNumber(String phoneNumber) {
+    public PersonDTO getByPhoneNumber(String phoneNumber) throws EntityNotFoundException {
         EntityManager em = emf.createEntityManager();
 
-        Person person = em.createQuery("SELECT p FROM Phone ph JOIN ph.person p WHERE ph.number =" + phoneNumber, Person.class).getSingleResult();
+        TypedQuery<Person> typedQuery = em.createQuery("SELECT p FROM Phone ph JOIN ph.person p WHERE ph.number =" + phoneNumber, Person.class);
+        if (typedQuery.getResultList().size() == 0)
+            throw new EntityNotFoundException("The Parent entity with phone number: '"+phoneNumber+"' was not found");
+        Person person = typedQuery.getSingleResult();
 
         return new PersonDTO(person);
     }
@@ -117,13 +127,13 @@ public class FacadePerson {
 
     // Updates everything, but NOT hobbies
     public PersonDTO update(PersonDTO personDTO) {
-        // Its being done in a separate method, because we caught an error otherwise.
-        removeAllHobbies(personDTO);
-
         EntityManager em = emf.createEntityManager();
 
         // Read entities from DB
         Person person = em.find(Person.class, personDTO.getId());
+
+        // Its being done in a separate method, because we caught an error otherwise.
+//        removeAllHobbies(person);
 
         Address address = em.find(Address.class, person.getAddress().getId());
         CityInfo cityInfo = em.find(CityInfo.class, address.getCityInfo().getId());
@@ -156,25 +166,32 @@ public class FacadePerson {
             person.addHobby(em.find(Hobby.class, hobbyDTO.getId()));
         });
 
-        em.getTransaction().begin();
-        em.merge(cityInfo);
-        em.merge(address);
-        em.merge(person);
-        person.getPhoneList().forEach(em::merge);
-        em.getTransaction().commit();
+        try {
+            em.getTransaction().begin();
+            em.merge(cityInfo);
+            em.merge(address);
+            person.getHobbyList().forEach(em::merge);
+            em.merge(person);
+            person.getPhoneList().forEach(em::merge);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
 
         return new PersonDTO(person);
     }
 
     // Being used before updating a persons infos
-    private void removeAllHobbies(PersonDTO personDTO) {
+    public void removeAllHobbies(PersonDTO personDTO) {
         EntityManager em = emf.createEntityManager();
         try {
             Person person = em.find(Person.class, personDTO.getId());
             em.getTransaction().begin();
-            personDTO.getHobbyDTOList().forEach(hobbyDTO -> {
-                person.removeHobby(em.find(Hobby.class, hobbyDTO.getId()));
+            List<Hobby> originalHobbyList = new ArrayList<>(person.getHobbyList());
+            originalHobbyList.forEach(hobby -> {
+                person.removeHobby(em.find(Hobby.class, hobby.getId()));
             });
+            person.getHobbyList().forEach(em::merge);
             em.merge(person);
             em.getTransaction().commit();
 

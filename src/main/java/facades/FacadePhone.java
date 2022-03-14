@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import dtos.PhoneDTO;
 import entities.Person;
 import entities.Phone;
+import errorhandling.EntityNotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -72,5 +73,14 @@ public class FacadePhone {
         } finally {
             em.close();
         }
+    }
+
+    public boolean alreadyExists(String phoneNumber) {
+        EntityManager em = emf.createEntityManager();
+
+        TypedQuery<Phone> typedQuery = em.createQuery("SELECT p FROM Phone p WHERE p.number =" + phoneNumber, Phone.class);
+        if (typedQuery.getResultList().size() != 0)
+            return true;
+        return false;
     }
 }

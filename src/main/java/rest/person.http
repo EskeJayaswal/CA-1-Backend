@@ -6,7 +6,7 @@ Content-Type: application/json
 
 {
 
-  "email": "Jonas@mail.dk",
+  "email": "Jonas123134@mail.dk",
   "firstName": "Jonas",
   "lastName": "Hansen",
   "addressDTO": {
@@ -46,17 +46,17 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8080/ca1_war_exploded/api/person/20
+GET http://localhost:8080/ca1_war_exploded/api/person/5
 Content-Type: application/json
 
 ###
 
-PUT http://localhost:8080/ca1_war_exploded/api/person/20
+PUT http://localhost:8080/ca1_war_exploded/api/person/27
 Content-Type: application/json
 
 {
 
-  "email": "Jonas@mail.dk",
+  "email": "Jonas2222@mail.dk",
   "firstName": "Jonas",
   "lastName": "Hansen",
   "addressDTO": {
@@ -96,8 +96,8 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:8080/ca1_war_exploded/api/person/removehobbies/20
-Content-Type: application/json
+#PUT http://localhost:8080/ca1_war_exploded/api/person/removehobbies/20
+#Content-Type: application/json
 
 ###
 

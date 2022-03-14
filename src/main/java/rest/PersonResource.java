@@ -2,6 +2,8 @@ package rest;
 
 import com.google.gson.*;
 import dtos.*;
+import errorhandling.EntityAlreadyExistsException;
+import errorhandling.EntityNotFoundException;
 import facades.*;
 import utils.EMF_Creator;
 
@@ -29,7 +31,7 @@ public class PersonResource {
     @Path("{id}")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getPersonByID(@PathParam("id") long id) {
+    public Response getPersonByID(@PathParam("id") long id) throws EntityNotFoundException {
         PersonDTO personDTO = FACADE.getById(id);
         return Response
                 .ok()
@@ -58,7 +60,7 @@ public class PersonResource {
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response create(String jsonContext) {
+    public Response create(String jsonContext) throws EntityAlreadyExistsException {
         PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
 
         PersonDTO newPersonDTO = FACADE.create(personDTO);
@@ -76,8 +78,10 @@ public class PersonResource {
     public Response update(@PathParam("id") long id, String jsonContext) {
         PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
         personDTO.setId(id);
+        FACADE.removeAllHobbies(personDTO);
         PersonDTO updatedPersonDTO = FACADE.update(personDTO);
 
+        System.out.println(GSON.toJson(updatedPersonDTO));
 
         return Response
                 .ok("SUCCESS")
@@ -90,7 +94,7 @@ public class PersonResource {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response getPersonByPhone(@PathParam("number") String number) {
+    public Response getPersonByPhone(@PathParam("number") String number) throws EntityNotFoundException {
         PersonDTO personDTO = FACADE.getByPhoneNumber(number);
         return Response.ok().entity(GSON.toJson(personDTO)).build();
     }

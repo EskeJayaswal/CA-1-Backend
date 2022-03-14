@@ -5,6 +5,7 @@ import dtos.CityInfoDTO;
 import dtos.PersonDTO;
 import dtos.PhoneDTO;
 import entities.Person;
+import errorhandling.EntityAlreadyExistsException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +49,7 @@ class FacadePersonTest {
     }
 
     @Test
-    public void testCreateMethod() {
+    public void testCreateMethod() throws EntityAlreadyExistsException {
         PhoneDTO phoneDTO = new PhoneDTO("32344343", "facadePerson");
         PhoneDTO phoneDTO2 = new PhoneDTO("12211122", "facadePerson2");
         CityInfoDTO ciDTO = new CityInfoDTO("2510", "SimCity");
