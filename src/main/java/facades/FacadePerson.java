@@ -28,44 +28,14 @@ public class FacadePerson {
         return instance;
     }
 
-    public PersonDTO create(PersonDTO personDTO) throws EntityAlreadyExistsException{
+    public long getPersonCount() {
         EntityManager em = emf.createEntityManager();
-
-        CityInfo cityInfo = new CityInfo(personDTO.getAddressDTO().getCityInfoDTO());
-        Address address = new Address(personDTO.getAddressDTO());
-        Person person = new Person(personDTO);
-
-        // Loop through all phoneDTOs and add them to the new person entity.
-        for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {
-            if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber()))
-                throw new EntityAlreadyExistsException("Phone number: "+ phoneDTO.getNumber() +" already exists in the database");
-            person.addPhone(new Phone(phoneDTO));
-        }
-
-        // Loop through hobbyDTOs and add to new person entity. Find the existing hobbies from database and pair them with person.
-        personDTO.getHobbyDTOList().forEach(hobbyDTO -> {
-            person.addHobby(em.find(Hobby.class, hobbyDTO.getId()));
-        });
-
-        // Add references for bi-directional relationships.
-        cityInfo.addAddress(address);
-        address.addPerson(person);
-
         try {
-            em.getTransaction().begin();
-
-            em.persist(cityInfo);
-            em.persist(address);
-            em.persist(person);
-            person.getPhoneList().forEach(em::persist);
-
-            em.getTransaction().commit();
+            return (long) em.createQuery("SELECT COUNT(p) FROM Person p").getSingleResult();
         } finally {
             em.close();
         }
-        return new PersonDTO(person);
     }
-
 
     public PersonDTO getById(long id) throws EntityNotFoundException {
         EntityManager em = emf.createEntityManager();
@@ -74,7 +44,6 @@ public class FacadePerson {
             throw new EntityNotFoundException("The Person entity with ID: '"+id+"' was not found");
         return new PersonDTO(person);
     }
-
 
     public PersonDTO getByPhoneNumber(String phoneNumber) throws EntityNotFoundException {
         EntityManager em = emf.createEntityManager();
@@ -87,16 +56,8 @@ public class FacadePerson {
         return new PersonDTO(person);
     }
 
-    public long getPersonCount() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            return (long) em.createQuery("SELECT COUNT(p) FROM Person p").getSingleResult();
-        } finally {
-            em.close();
-        }
-    }
-
-    public List<PersonDTO> getPersonsWithHobby(long hobbyId) {
+    public List<PersonDTO> getPersonsWithHobby(long hobbyId) throws EntityNotFoundException {
+        FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyId);
         EntityManager em = emf.createEntityManager();
         TypedQuery<Person> typedQueryPerson
                 = em.createQuery("SELECT p FROM Person p LEFT JOIN p.hobbyList h WHERE h.id=" + hobbyId, Person.class);
@@ -108,15 +69,52 @@ public class FacadePerson {
         return personDTOList;
     }
 
-    // Updates everything
-    public PersonDTO update(PersonDTO personDTO) throws EntityAlreadyExistsException {
+    public PersonDTO create(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
+        EntityManager em = emf.createEntityManager();
+        CityInfo cityInfo = new CityInfo(personDTO.getAddressDTO().getCityInfoDTO());
+        Address address = new Address(personDTO.getAddressDTO());
+        Person person = new Person(personDTO);
+
+        for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {        // Loop through all phoneDTOs and add them to the new person entity
+            if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber()))
+                throw new EntityAlreadyExistsException("Phone number: "+ phoneDTO.getNumber() +" already exists in the database");
+            person.addPhone(new Phone(phoneDTO));
+        }
+
+//        personDTO.getHobbyDTOList().forEach(hobbyDTO -> {           // Find the existing hobbies from database and pair them with person.
+//            person.addHobby(em.find(Hobby.class, hobbyDTO.getId()));
+//        });
+
+        for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
+            person.addHobby(FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyDTO.getId()));
+        }
+
+        cityInfo.addAddress(address);                               // Add references for bi-directional relationships.
+        address.addPerson(person);
+
+        try {
+            em.getTransaction().begin();
+            em.persist(cityInfo);
+            em.persist(address);
+            em.persist(person);
+            person.getPhoneList().forEach(em::persist);
+
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        return new PersonDTO(person);
+    }
+
+    // Update person
+    public PersonDTO update(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
         EntityManager em = emf.createEntityManager();
         Person person = em.find(Person.class, personDTO.getId());                       // Read Person entity from DB
         Address address = em.find(Address.class, person.getAddress().getId());          // Read Address entity from DB
         CityInfo cityInfo = em.find(CityInfo.class, address.getCityInfo().getId());     // Read cityInfo entity from DB
 
-        TypedQuery<Phone> tq = em.createQuery("SELECT p FROM Phone p  WHERE p.person.id = " + person.getId(), Phone.class);
-        List<Phone> phoneList = tq.getResultList();                 // returns list of person numbers already in database
+//        TypedQuery<Phone> tq = em.createQuery("SELECT p FROM Phone p  WHERE p.person.id = " + person.getId(), Phone.class);
+//        List<Phone> phoneList = tq.getResultList();                 // returns list of person numbers already in database
 
         person.setEmail(personDTO.getEmail());                                          // Update Person entity
         person.setFirstName(personDTO.getFirstName());
@@ -135,10 +133,13 @@ public class FacadePerson {
             person.addPhone(new Phone(phoneDTO));
         }
 
-        // Loop through hobbyDTOs and add to new person entity. Find the existing hobbies from database and pair them with person.
-        personDTO.getHobbyDTOList().forEach(hobbyDTO -> {
-            person.addHobby(em.find(Hobby.class, hobbyDTO.getId()));
-        });
+//        personDTO.getHobbyDTOList().forEach(hobbyDTO -> {           // Find the existing hobbies from database and pair them with person.
+//            person.addHobby(em.find(Hobby.class, hobbyDTO.getId()));
+//        });
+
+        for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
+            person.addHobby(FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyDTO.getId()));
+        }
 
         try {
             em.getTransaction().begin();

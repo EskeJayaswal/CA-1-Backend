@@ -4,6 +4,7 @@ import dtos.HobbyDTO;
 import dtos.PersonDTO;
 import entities.Hobby;
 import entities.Person;
+import errorhandling.EntityNotFoundException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -24,7 +25,6 @@ public class FacadeHobby {
 
     public HobbyDTO create(HobbyDTO hobbyDTO) {
         Hobby hobby = new Hobby(hobbyDTO);
-
         EntityManager em = emf.createEntityManager();
 
         try {
@@ -33,16 +33,24 @@ public class FacadeHobby {
             em.getTransaction().commit();
         } finally {
             em.close();
-
         }
         return new HobbyDTO(hobby);
     }
 
-    public HobbyDTO getHobbyByID(long id) {
+    public Hobby getHobbyByID(long id) throws EntityNotFoundException {
         EntityManager em = emf.createEntityManager();
         Hobby hobby = em.find(Hobby.class, id);
-        return new HobbyDTO(hobby);
+        if (hobby == null)
+            throw new EntityNotFoundException("The Hobby entity with ID: '"+id+"' was not found");
+        return hobby;
     }
+
+    public void checkValidHobbyIds(PersonDTO personDTO) throws EntityNotFoundException {
+        for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
+            getHobbyByID(hobbyDTO.getId());
+        }
+    }
+
 
     // Not sure if working..
 //    public HobbyDTO getHobbyByName(String hobbyName) {

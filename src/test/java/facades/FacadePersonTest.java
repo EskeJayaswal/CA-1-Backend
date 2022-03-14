@@ -6,6 +6,7 @@ import dtos.PersonDTO;
 import dtos.PhoneDTO;
 import entities.Person;
 import errorhandling.EntityAlreadyExistsException;
+import errorhandling.EntityNotFoundException;
 import org.junit.jupiter.api.*;
 import utils.EMF_Creator;
 
@@ -47,7 +48,7 @@ class FacadePersonTest {
     }
 
     @Test
-    public void testCreateMethod() throws EntityAlreadyExistsException {
+    public void testCreateMethod() throws EntityAlreadyExistsException, EntityNotFoundException {
         PhoneDTO phoneDTO = new PhoneDTO("32344343", "facadePerson");
         PhoneDTO phoneDTO2 = new PhoneDTO("12211122", "facadePerson2");
         CityInfoDTO ciDTO = new CityInfoDTO("2510", "SimCity");

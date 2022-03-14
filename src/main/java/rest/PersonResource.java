@@ -28,6 +28,7 @@ public class PersonResource {
         return "{\"count\":" + FACADE.getPersonCount() + "}";
     }
 
+    // Get a person with ID
     @Path("{id}")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -43,7 +44,7 @@ public class PersonResource {
     @Path("hobby/{id}")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public Response getPersonsWithHobby(@PathParam("id") long id) {
+    public Response getPersonsWithHobby(@PathParam("id") long id) throws EntityNotFoundException {
         List<PersonDTO> personsWithHobby = FACADE.getPersonsWithHobby(id);
 
         return Response
@@ -52,17 +53,20 @@ public class PersonResource {
                 .build();
     }
 
+    // Create a new person
     @POST
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response create(String jsonContext) throws EntityAlreadyExistsException {
+    public Response create(String jsonContext) throws EntityNotFoundException, EntityAlreadyExistsException {
         PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
+        FacadeHobby.getFacadeHobby(EMF).checkValidHobbyIds(personDTO);
+
         PersonDTO newPersonDTO = FACADE.create(personDTO);
 
         return Response.ok().entity(GSON.toJson(newPersonDTO)).build();
     }
 
-    // Update by id
+    // Update person by id
     @Path("{id}")
     @PUT
     @Produces({MediaType.APPLICATION_JSON})
@@ -71,11 +75,11 @@ public class PersonResource {
         PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
         personDTO.setId(id);
 
+        FacadeHobby.getFacadeHobby(EMF).checkValidHobbyIds(personDTO);
         FACADE.removeAllPhones(personDTO);
         FACADE.removeAllHobbies(personDTO);
-        PersonDTO updatedPersonDTO = FACADE.update(personDTO);
 
-        System.out.println(GSON.toJson(updatedPersonDTO));
+        PersonDTO updatedPersonDTO = FACADE.update(personDTO);
 
         return Response
                 .ok("SUCCESS")

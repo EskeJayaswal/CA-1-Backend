@@ -1,17 +1,14 @@
-### New testing
-
+# Create Person
 POST http://localhost:8080/ca1_war_exploded/api/person/
 Content-Type: application/json
 
-
 {
-
-  "email": "Bob4@mail.dk",
+  "email": "JamesBond@mail.dk",
   "firstName": "James",
-  "lastName": "Gok",
+  "lastName": "Bond",
   "addressDTO": {
 
-    "street": "Lalavej 13",
+    "street": "Bondvej",
     "additionalInfo": "2 tv",
     "cityInfoDTO": {
 
@@ -21,45 +18,35 @@ Content-Type: application/json
   },
   "phoneList": [
     {
-    "number": "985616",
-    "description": "Hjem"
+    "number": "007",
+    "description": "Home"
   }
   ],
   "hobbyDTOList": [
     {
       "id": 1
-    },
-    {
-      "id": 2
-    },
-    {
-      "id": 3
     }
   ]
 }
 
-
-
-
 ###
-
+# Get info from person with ID
 GET http://localhost:8080/ca1_war_exploded/api/person/29
 Content-Type: application/json
 
 ###
-
-PUT http://localhost:8080/ca1_war_exploded/api/person/29
+# Update person with ID
+PUT http://localhost:8080/ca1_war_exploded/api/person/1
 Content-Type: application/json
 
 {
-
-  "email": "Bjarke@mail.dk",
-  "firstName": "james",
-  "lastName": "Gok",
+  "email": "JimmyBondz@mail.dk",
+  "firstName": "Jimmy",
+  "lastName": "Bondz",
   "addressDTO": {
 
-    "street": "Lalavej 13",
-    "additionalInfo": "2 tv",
+    "street": "Bonzaivej 65",
+    "additionalInfo": "21 tv",
     "cityInfoDTO": {
 
       "zipCode": "2500",
@@ -68,11 +55,11 @@ Content-Type: application/json
   },
   "phoneList": [
     {
-      "number": "9876",
-      "description": "Hjem"
+      "number": "007",
+      "description": "Home"
     },
     {
-      "number": "699999999",
+      "number": "12245",
       "description": "Work"
     }
   ],
@@ -87,18 +74,16 @@ Content-Type: application/json
 }
 
 ###
-
+# Get person with phone number
 GET http://localhost:8080/ca1_war_exploded/api/person/phone/36164523
 Content-Type: application/json
 
+###
+# Get persons with given hobby
+GET http://localhost:8080/ca1_war_exploded/api/person/hobby/1
+Content-Type: application/json
 
 ###
 
 #PUT http://localhost:8080/ca1_war_exploded/api/person/removehobbies/20
 #Content-Type: application/json
-
-###
-
-GET http://localhost:8080/ca1_war_exploded/api/person/hobby/1
-Content-Type: application/json
-

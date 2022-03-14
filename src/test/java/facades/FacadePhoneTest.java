@@ -6,6 +6,7 @@ import dtos.PersonDTO;
 import dtos.PhoneDTO;
 import entities.Phone;
 import errorhandling.EntityAlreadyExistsException;
+import errorhandling.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -48,7 +49,7 @@ class FacadePhoneTest {
     public void testPhoneAmount() {assertEquals(1, facade.getPhoneCount(), "Test expects 1 Phone number in database");}
 
     @Test
-    public void testCreateMethod() throws EntityAlreadyExistsException {
+    public void testCreateMethod() throws EntityAlreadyExistsException, EntityNotFoundException {
         PhoneDTO phoneDTO = new PhoneDTO("32344343", "Cell");
         CityInfoDTO ciDTO = new CityInfoDTO("2510", "SimCity");
         AddressDTO aDTO = new AddressDTO("Bobyvej", "Her bor Bob", ciDTO);
