@@ -25,27 +25,38 @@ public class FacadePerson {
         return instance;
     }
 
-    public PersonDTO create(PersonDTO pDTO) {
-        CityInfo cityInfo = new CityInfo(pDTO.getAddressDTO().getCityInfoDTO());
-        Address address = new Address(pDTO.getAddressDTO());
-        Person person = new Person(pDTO);
+    public PersonDTO create(PersonDTO personDTO) {
+        EntityManager em = emf.createEntityManager();
 
-        pDTO.getPhoneList().forEach(phoneDTO -> {
-            Phone phone = new Phone(phoneDTO);
-            person.addPhone(phone);
+        CityInfo cityInfo = new CityInfo(personDTO.getAddressDTO().getCityInfoDTO());
+        Address address = new Address(personDTO.getAddressDTO());
+        Person person = new Person(personDTO);
+
+        // Loop through all phoneDTOs and add them to the new person entity.
+        personDTO.getPhoneList().forEach(phoneDTO -> {
+            person.addPhone(new Phone(phoneDTO));
         });
 
 
+        // Loop through all hobbyDTOs and add them to the new person entity. OBS: we don't create new hobby entities
+        // but we find the existing hobbies from the database and pair them with the person.
+        personDTO.getHobbyDTOList().forEach(hobbyDTO -> {
+            person.addHobby(em.find(Hobby.class, hobbyDTO.getId()));
+        });
+
+
+        // Add references for bi-directional relationships.
         cityInfo.addAddress(address);
         address.addPerson(person);
 
-        EntityManager em = emf.createEntityManager();
+
         try {
             em.getTransaction().begin();
 
             em.persist(cityInfo);
             em.persist(address);
             em.persist(person);
+            person.getHobbyList().forEach(em::merge);
             person.getPhoneList().forEach(em::persist);
 
             em.getTransaction().commit();
@@ -87,6 +98,25 @@ public class FacadePerson {
 
     }
 
+    public PersonDTO removeAllHobbies(PersonDTO personDTO) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Person person = em.find(Person.class, personDTO.getId());
+            em.getTransaction().begin();
+            personDTO.getHobbyDTOList().forEach(hobbyDTO -> {
+                person.removeHobby(em.find(Hobby.class, hobbyDTO.getId()));
+            });
+            em.merge(person);
+            em.getTransaction().commit();
+
+            return new PersonDTO(person);
+
+        } finally {
+            em.close();
+        }
+
+    }
+
     public PersonDTO getById(long id) {
         EntityManager em = emf.createEntityManager();
         Person person = em.find(Person.class, id);
@@ -94,16 +124,25 @@ public class FacadePerson {
         return new PersonDTO(person);
     }
 
-    public PersonDTO getByPhoneNumber(String phoneNumber) {
+//    public PersonDTO getByPhoneNumber(String phoneNumber) {
+//        EntityManager em = emf.createEntityManager();
+//        TypedQuery<Phone> typedQueryPhone
+//                = em.createQuery("SELECT p FROM Phone p WHERE p.number=:number", Phone.class);
+//        typedQueryPhone.setParameter("number", phoneNumber);
+//
+//        List<Phone> phoneList = typedQueryPhone.getResultList();
+//        long personId = phoneList.get(0).getPerson().getId();
+//
+//        return getById(personId);
+//    }
+
+
+    public PersonDTO newGetByPhoneNumber(String phoneNumber) {
         EntityManager em = emf.createEntityManager();
-        TypedQuery<Phone> typedQueryPhone
-                = em.createQuery("SELECT p FROM Phone p WHERE p.number=:number", Phone.class);
-        typedQueryPhone.setParameter("number", phoneNumber);
 
-        List<Phone> phoneList = typedQueryPhone.getResultList();
-        long personId = phoneList.get(0).getPerson().getId();
+        Person person = em.createQuery("SELECT p FROM Phone ph JOIN ph.person p WHERE ph.number =" + phoneNumber, Person.class).getSingleResult();
 
-        return getById(personId);
+        return new PersonDTO(person);
     }
 
     public long getPersonCount() {
@@ -115,43 +154,43 @@ public class FacadePerson {
         }
     }
 
-    public JsonObject getPersonInfo(PersonDTO personDTO) {
-        JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("personId", personDTO.getId());
-        jsonObject.addProperty("email", personDTO.getEmail());
-        jsonObject.addProperty("firstName", personDTO.getFirstName());
-        jsonObject.addProperty("lastName", personDTO.getLastName());
-
-        jsonObject.addProperty("addressId", personDTO.getAddressDTO().getId());
-        jsonObject.addProperty("street", personDTO.getAddressDTO().getStreet());
-        jsonObject.addProperty("additionalInfo", personDTO.getAddressDTO().getAdditionalInfo());
-
-        jsonObject.addProperty("cityInfoId", personDTO.getAddressDTO().getCityInfoDTO().getId());
-        jsonObject.addProperty("zipCode", personDTO.getAddressDTO().getCityInfoDTO().getZipCode());
-        jsonObject.addProperty("city", personDTO.getAddressDTO().getCityInfoDTO().getCity());
-
-        JsonArray phoneArray = new JsonArray();
-        for (PhoneDTO p : getPhoneDTOs(personDTO)) {
-            JsonObject pObject = new JsonObject();
-            pObject.addProperty("phoneId", p.getId());
-            pObject.addProperty("number", p.getNumber());
-            pObject.addProperty("description", p.getDescription());
-            phoneArray.add(pObject);
-        }
-        jsonObject.add("phone", phoneArray);
-
-        JsonArray hobbyArray = new JsonArray();
-        for (HobbyDTO h : personDTO.getHobbyDTOList()) {
-            JsonObject hObject = new JsonObject();
-            hObject.addProperty("hobbyId", h.getId());
-            hObject.addProperty("name", h.getName());
-            hObject.addProperty("description", h.getDescription());
-            hobbyArray.add(hObject);
-        }
-        jsonObject.add("hobby", hobbyArray);
-
-        return jsonObject;
-    }
+//    public JsonObject getPersonInfo(PersonDTO personDTO) {
+//        JsonObject jsonObject = new JsonObject();
+//        jsonObject.addProperty("personId", personDTO.getId());
+//        jsonObject.addProperty("email", personDTO.getEmail());
+//        jsonObject.addProperty("firstName", personDTO.getFirstName());
+//        jsonObject.addProperty("lastName", personDTO.getLastName());
+//
+//        jsonObject.addProperty("addressId", personDTO.getAddressDTO().getId());
+//        jsonObject.addProperty("street", personDTO.getAddressDTO().getStreet());
+//        jsonObject.addProperty("additionalInfo", personDTO.getAddressDTO().getAdditionalInfo());
+//
+//        jsonObject.addProperty("cityInfoId", personDTO.getAddressDTO().getCityInfoDTO().getId());
+//        jsonObject.addProperty("zipCode", personDTO.getAddressDTO().getCityInfoDTO().getZipCode());
+//        jsonObject.addProperty("city", personDTO.getAddressDTO().getCityInfoDTO().getCity());
+//
+//        JsonArray phoneArray = new JsonArray();
+//        for (PhoneDTO p : getPhoneDTOs(personDTO)) {
+//            JsonObject pObject = new JsonObject();
+//            pObject.addProperty("phoneId", p.getId());
+//            pObject.addProperty("number", p.getNumber());
+//            pObject.addProperty("description", p.getDescription());
+//            phoneArray.add(pObject);
+//        }
+//        jsonObject.add("phone", phoneArray);
+//
+//        JsonArray hobbyArray = new JsonArray();
+//        for (HobbyDTO h : personDTO.getHobbyDTOList()) {
+//            JsonObject hObject = new JsonObject();
+//            hObject.addProperty("hobbyId", h.getId());
+//            hObject.addProperty("name", h.getName());
+//            hObject.addProperty("description", h.getDescription());
+//            hobbyArray.add(hObject);
+//        }
+//        jsonObject.add("hobby", hobbyArray);
+//
+//        return jsonObject;
+//    }
 
     public List<PhoneDTO> getPhoneDTOs(PersonDTO personDTO) {
         EntityManager em = emf.createEntityManager();
@@ -201,51 +240,46 @@ public class FacadePerson {
     }
 
 
-    public PersonDTO update(PersonDTO pDTO) {
+    // Updates everything, but NOT hobbies
+    public PersonDTO update(PersonDTO personDTO) {
         EntityManager em = emf.createEntityManager();
 
         // Read entities from DB
-        Person person = em.find(Person.class, pDTO.getId());
+        Person person = em.find(Person.class, personDTO.getId());
+
         Address address = em.find(Address.class, person.getAddress().getId());
         CityInfo cityInfo = em.find(CityInfo.class, address.getCityInfo().getId());
 
         TypedQuery<Phone> tq = em.createQuery("SELECT p FROM Phone p  WHERE p.person.id = " + person.getId(), Phone.class);
         List<Phone> phoneList = tq.getResultList();
 
-
         // Check for updates on Person
-        person.setEmail(pDTO.getEmail());
-        person.setFirstName(pDTO.getFirstName());
-        person.setFirstName(pDTO.getLastName());
+        person.setEmail(personDTO.getEmail());
+        person.setFirstName(personDTO.getFirstName());
+        person.setFirstName(personDTO.getLastName());
 
         // Check for updates on Address
-        address.setStreet(pDTO.getAddressDTO().getStreet());
-        address.setAdditionalInfo(pDTO.getAddressDTO().getAdditionalInfo());
+        address.setStreet(personDTO.getAddressDTO().getStreet());
+        address.setAdditionalInfo(personDTO.getAddressDTO().getAdditionalInfo());
 
         // Check for updates on CityInfo
-        cityInfo.setZipCode(pDTO.getAddressDTO().getCityInfoDTO().getZipCode());
-        cityInfo.setCity(pDTO.getAddressDTO().getCityInfoDTO().getCity());
+        cityInfo.setZipCode(personDTO.getAddressDTO().getCityInfoDTO().getZipCode());
+        cityInfo.setCity(personDTO.getAddressDTO().getCityInfoDTO().getCity());
 
         // Check for updates on every phone number.
-        for (int i = 0; i < pDTO.getPhoneList().size(); i++) {
-            phoneList.get(i).setNumber(pDTO.getPhoneList().get(i).getNumber());
-            phoneList.get(i).setDescription(pDTO.getPhoneList().get(i).getDescription());
+        for (int i = 0; i < personDTO.getPhoneList().size(); i++) {
+            phoneList.get(i).setNumber(personDTO.getPhoneList().get(i).getNumber());
+            phoneList.get(i).setDescription(personDTO.getPhoneList().get(i).getDescription());
         }
-
-
-
 
         em.getTransaction().begin();
         em.merge(cityInfo);
         em.merge(address);
         em.merge(person);
         person.getPhoneList().forEach(em::merge);
+        person.getHobbyList().forEach(em::merge);
         em.getTransaction().commit();
-
-
 
         return new PersonDTO(person);
     }
-
-
 }

@@ -37,7 +37,7 @@ POST http://localhost:8080/ca1_war_exploded/api/person/addhobbies
 Content-Type: application/json
 
 {
-  "personId": 22,
+  "personId": 20,
   "hobbies": [
     1, 2, 3
   ]
@@ -90,83 +90,3 @@ Content-Type: application/json
 
 
 
-### New testing
-
-POST http://localhost:8080/ca1_war_exploded/api/person/
-Content-Type: application/json
-
-
-{
-
-  "email": "ghdghgdf@mail.dk",
-  "firstName": "VV",
-  "lastName": "VV",
-  "addressDTO": {
-
-    "street": "Skolevej 44",
-    "additionalInfo": "ingen",
-    "cityInfoDTO": {
-
-      "zipCode": "2500",
-      "city": "Valby"
-    }
-  },
-  "phoneList": [{
-    "number": "23232323",
-    "description": "Hjem"
-  },
-    {
-      "number": "18357413",
-      "description": "Arbejde"
-    }
-  ],
-  "hobbyDTOList": [
-    {
-      "id": 1
-    }
-  ]
-}
-
-
-
-
-###
-
-GET http://localhost:8080/ca1_war_exploded/api/person/12
-Content-Type: application/json
-
-###
-
-PUT http://localhost:8080/ca1_war_exploded/api/person/12
-Content-Type: application/json
-
-{
-
-  "email": "ghdghgdf@mail.dk",
-  "firstName": "Viggo",
-  "lastName": "Volvo",
-  "addressDTO": {
-
-    "street": "Skolevej 44",
-    "additionalInfo": "ingen",
-    "cityInfoDTO": {
-
-      "zipCode": "2500",
-      "city": "Valby"
-    }
-  },
-  "phoneList": [{
-    "number": "23232323",
-    "description": "Hjem"
-  },
-    {
-      "number": "18357413",
-      "description": "Arbejde"
-    }
-  ],
-  "hobbyDTOList": [
-    {
-      "id": 1
-    }
-  ]
-}
