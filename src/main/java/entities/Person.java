@@ -32,7 +32,7 @@ public class Person {
             inverseJoinColumns = @JoinColumn(name = "hobby_id"))
     private List<Hobby> hobbyList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", orphanRemoval = true)
     private List<Phone> phoneList = new ArrayList<>();
 
     @ManyToOne
@@ -116,6 +116,11 @@ public class Person {
     public void addPhone(Phone phone) {
         this.phoneList.add(phone);
         phone.setPerson(this);
+    }
+
+    public void removePhone(Phone phone) {
+        phoneList.remove(phone);
+        phone.setPerson(null);
     }
 
     public Address getAddress() {

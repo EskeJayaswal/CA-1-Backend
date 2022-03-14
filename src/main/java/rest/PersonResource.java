@@ -75,9 +75,11 @@ public class PersonResource {
     @PUT
     @Produces({MediaType.APPLICATION_JSON})
     @Consumes({MediaType.APPLICATION_JSON})
-    public Response update(@PathParam("id") long id, String jsonContext) {
+    public Response update(@PathParam("id") long id, String jsonContext) throws EntityNotFoundException, EntityAlreadyExistsException {
         PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
         personDTO.setId(id);
+
+        FACADE.removeAllPhones(personDTO);
         FACADE.removeAllHobbies(personDTO);
         PersonDTO updatedPersonDTO = FACADE.update(personDTO);
 

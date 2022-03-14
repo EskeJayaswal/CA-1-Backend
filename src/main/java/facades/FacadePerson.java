@@ -75,7 +75,7 @@ public class FacadePerson {
         EntityManager em = emf.createEntityManager();
         Person person = em.find(Person.class, id);
         if (person == null)
-            throw new EntityNotFoundException("The Parent entity with ID: '"+id+"' was not found");
+            throw new EntityNotFoundException("The Person entity with ID: '"+id+"' was not found");
         return new PersonDTO(person);
     }
 
@@ -85,7 +85,7 @@ public class FacadePerson {
 
         TypedQuery<Person> typedQuery = em.createQuery("SELECT p FROM Phone ph JOIN ph.person p WHERE ph.number =" + phoneNumber, Person.class);
         if (typedQuery.getResultList().size() == 0)
-            throw new EntityNotFoundException("The Parent entity with phone number: '"+phoneNumber+"' was not found");
+            throw new EntityNotFoundException("The Person entity with phone number: '"+phoneNumber+"' was not found");
         Person person = typedQuery.getSingleResult();
 
         return new PersonDTO(person);
@@ -126,7 +126,9 @@ public class FacadePerson {
     }
 
     // Updates everything, but NOT hobbies
-    public PersonDTO update(PersonDTO personDTO) {
+    public PersonDTO update(PersonDTO personDTO) throws EntityAlreadyExistsException {
+        // TODO: Allow user to keep their current phone number
+
         EntityManager em = emf.createEntityManager();
 
         // Read entities from DB
@@ -139,7 +141,7 @@ public class FacadePerson {
         CityInfo cityInfo = em.find(CityInfo.class, address.getCityInfo().getId());
 
         TypedQuery<Phone> tq = em.createQuery("SELECT p FROM Phone p  WHERE p.person.id = " + person.getId(), Phone.class);
-        List<Phone> phoneList = tq.getResultList();
+        List<Phone> phoneList = tq.getResultList();     // returns list of person numbers already in database
 
         // Check for updates on Person
         person.setEmail(personDTO.getEmail());
@@ -155,10 +157,63 @@ public class FacadePerson {
         cityInfo.setCity(personDTO.getAddressDTO().getCityInfoDTO().getCity());
 
         // Check for updates on every phone number.
-        for (int i = 0; i < personDTO.getPhoneList().size(); i++) {
-            phoneList.get(i).setNumber(personDTO.getPhoneList().get(i).getNumber());
-            phoneList.get(i).setDescription(personDTO.getPhoneList().get(i).getDescription());
+
+        for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {
+            if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber()))
+                throw new EntityAlreadyExistsException("Phone number: "+ phoneDTO.getNumber() +" already exists in the database");
+
+            person.addPhone(new Phone(phoneDTO));
         }
+
+        /*
+        // 1) Same number
+        // 2) Add a new number
+        // 3) Remove an existing number
+        // 4) Change existing number
+
+        // Remove all and add again ==
+            // new ID's to all numbers
+
+
+        for (Phone dbPhone : phoneList) {
+            for (PhoneDTO updatedPhone : personDTO.getPhoneList()) {
+                if (!dbPhone.getNumber().equals(updatedPhone.getNumber())) {
+                    // Number does not exist -> Add new number
+
+                }
+            }
+        }
+
+
+        List<Integer> indexToRemove = new ArrayList<>();
+        if (personDTO.getPhoneList().size() < person.getPhoneList().size()) {
+            for (int i = 0; i < person.getPhoneList().size(); i++) {
+                if (i < personDTO.getPhoneList().size()) {
+                    continue;
+                }
+                indexToRemove.add(i);
+            }
+        }
+        for (Integer i : indexToRemove) {
+            person.getPhoneList().remove(i);
+        }
+
+        for (int i = 0; i < personDTO.getPhoneList().size(); i++) {
+            String number = personDTO.getPhoneList().get(i).getNumber();
+            String description = personDTO.getPhoneList().get(i).getDescription();
+
+            if (FacadePhone.getFacadePhone(emf).alreadyExists(number))
+                throw new EntityAlreadyExistsException("Phone number: "+ number +" already exists in the database");
+
+            if (i >= phoneList.size()) {
+                phoneList.add(new Phone(number, description));
+            } else {
+                phoneList.get(i).setNumber(number);
+                phoneList.get(i).setDescription(description);
+            }
+        }
+        */
+
 
         // Loop through all hobbyDTOs and add them to the new person entity. OBS: we don't create new hobby entities
         // but we find the existing hobbies from the database and pair them with the person.
@@ -181,12 +236,42 @@ public class FacadePerson {
         return new PersonDTO(person);
     }
 
-    // Being used before updating a persons infos
-    public void removeAllHobbies(PersonDTO personDTO) {
+    public void removeAllPhones(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
+        // Check if the new number already exists in database under a different person
+        for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {
+            if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber(), personDTO))
+                throw new EntityAlreadyExistsException("Phone number: "+ phoneDTO.getNumber() +" already exists in the database");
+        }
+
         EntityManager em = emf.createEntityManager();
         try {
             Person person = em.find(Person.class, personDTO.getId());
+            if (person == null)
+                throw new EntityNotFoundException("The Person entity with ID: '"+ personDTO.getId() +"' was not found");
+
             em.getTransaction().begin();
+
+            List<Phone> originalPhoneList = new ArrayList<>(person.getPhoneList());
+            originalPhoneList.forEach(person::removePhone);
+            person.getPhoneList().forEach(em::remove);
+
+            em.merge(person);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
+
+    // Being used before updating a persons infos
+    public void removeAllHobbies(PersonDTO personDTO) throws EntityNotFoundException {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Person person = em.find(Person.class, personDTO.getId());
+            if (person == null)
+                throw new EntityNotFoundException("The Person entity with ID: '"+ personDTO.getId() +"' was not found");
+
+            em.getTransaction().begin();
+
             List<Hobby> originalHobbyList = new ArrayList<>(person.getHobbyList());
             originalHobbyList.forEach(hobby -> {
                 person.removeHobby(em.find(Hobby.class, hobby.getId()));

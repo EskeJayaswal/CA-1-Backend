@@ -6,9 +6,9 @@ Content-Type: application/json
 
 {
 
-  "email": "Jonas123134@mail.dk",
-  "firstName": "Jonas",
-  "lastName": "Hansen",
+  "email": "Bob4@mail.dk",
+  "firstName": "James",
+  "lastName": "Gok",
   "addressDTO": {
 
     "street": "Lalavej 13",
@@ -19,14 +19,11 @@ Content-Type: application/json
       "city": "Valby"
     }
   },
-  "phoneList": [{
-    "number": "36164523",
-    "description": "Hjem"
-  },
+  "phoneList": [
     {
-      "number": "99999999",
-      "description": "Arbejde"
-    }
+    "number": "599999999",
+    "description": "Hjem"
+  }
   ],
   "hobbyDTOList": [
     {
@@ -46,19 +43,19 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:8080/ca1_war_exploded/api/person/5
+GET http://localhost:8080/ca1_war_exploded/api/person/29
 Content-Type: application/json
 
 ###
 
-PUT http://localhost:8080/ca1_war_exploded/api/person/27
+PUT http://localhost:8080/ca1_war_exploded/api/person/29
 Content-Type: application/json
 
 {
 
-  "email": "Jonas2222@mail.dk",
-  "firstName": "Jonas",
-  "lastName": "Hansen",
+  "email": "Bjarke@mail.dk",
+  "firstName": "james",
+  "lastName": "Gok",
   "addressDTO": {
 
     "street": "Lalavej 13",
@@ -69,13 +66,14 @@ Content-Type: application/json
       "city": "Valby"
     }
   },
-  "phoneList": [{
-    "number": "36164523",
-    "description": "Hjem"
-  },
+  "phoneList": [
     {
-      "number": "99999999",
-      "description": "Arbejde"
+      "number": "9876",
+      "description": "Hjem"
+    },
+    {
+      "number": "699999999",
+      "description": "Work"
     }
   ],
   "hobbyDTOList": [

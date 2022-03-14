@@ -3,6 +3,7 @@ package facades;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dtos.PersonDTO;
 import dtos.PhoneDTO;
 import entities.Person;
 import entities.Phone;
@@ -81,6 +82,27 @@ public class FacadePhone {
         TypedQuery<Phone> typedQuery = em.createQuery("SELECT p FROM Phone p WHERE p.number =" + phoneNumber, Phone.class);
         if (typedQuery.getResultList().size() != 0)
             return true;
+        return false;
+    }
+
+    public boolean alreadyExists(String phoneNumber, PersonDTO personDTO) {
+        EntityManager em = emf.createEntityManager();
+
+        TypedQuery<Phone> typedQuery = em.createQuery("SELECT p FROM Phone p WHERE p.number =" + phoneNumber, Phone.class);
+        if (typedQuery.getResultList().size() != 0) {
+
+            boolean personsOwnNumber = false;
+            for (Phone phone : typedQuery.getResultList()) {
+                if (phone.getPerson().getId() == personDTO.getId()) {
+                    personsOwnNumber = true;
+                }
+            }
+            if (personsOwnNumber) {
+                return false;
+            }
+
+            return true;
+        }
         return false;
     }
 }
