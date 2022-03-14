@@ -73,11 +73,6 @@ public class Hobby {
         this.personList.add(person);
     }
 
-    public void removePerson(Person person) {
-        personList.remove(person);
-        person.getHobbyList().remove(this);
-    }
-
     @Override
     public String toString() {
         return "Hobby{" +

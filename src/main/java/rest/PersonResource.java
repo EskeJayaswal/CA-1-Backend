@@ -76,7 +76,6 @@ public class PersonResource {
     public Response update(@PathParam("id") long id, String jsonContext) {
         PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
         personDTO.setId(id);
-        FACADE.removeAllHobbies(personDTO);
         PersonDTO updatedPersonDTO = FACADE.update(personDTO);
 
 

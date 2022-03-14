@@ -44,27 +44,27 @@ class FacadeHobbyTest {
         }
     }
 
-    @Test
-    public void tesCreateMethod() {
-        CityInfoDTO ciDTO = new CityInfoDTO("2400", "KBHNV");
-        AddressDTO aDTO = new AddressDTO("Ravnevej", "Her bor Preben", ciDTO);
-        PersonDTO pDTO = new PersonDTO("preben@123.dk", "Preben", "Stenstrøm", aDTO);
-        FacadePerson facadePerson = FacadePerson.getFacadePerson(emf);
-        PersonDTO newDTO =  facadePerson.create(pDTO);
-        facadePerson.addHobby(newDTO.getId(), 1);
-    }
-
-    @Test
-    public void testAddAllHobbies() {
-        CityInfoDTO ciDTO = new CityInfoDTO("2450", "Vejle");
-        AddressDTO aDTO = new AddressDTO("vejlevej", "Her bor Jan", ciDTO);
-        PersonDTO pDTO = new PersonDTO("jan@123.dk", "jan", "Langballe", aDTO);
-        FacadePerson facadePerson = FacadePerson.getFacadePerson(emf);
-        PersonDTO newDTO =  facadePerson.create(pDTO);
-        newDTO.addHobbyDTO(facade.getHobbyByID(1));
-        newDTO.addHobbyDTO(facade.getHobbyByID(2));
-        newDTO.addHobbyDTO(facade.getHobbyByID(3));
-        facadePerson.addAllHobbies(newDTO);
-    }
+//    @Test
+//    public void tesCreateMethod() {
+//        CityInfoDTO ciDTO = new CityInfoDTO("2400", "KBHNV");
+//        AddressDTO aDTO = new AddressDTO("Ravnevej", "Her bor Preben", ciDTO);
+//        PersonDTO pDTO = new PersonDTO("preben@123.dk", "Preben", "Stenstrøm", aDTO);
+//        FacadePerson facadePerson = FacadePerson.getFacadePerson(emf);
+//        PersonDTO newDTO =  facadePerson.create(pDTO);
+//        facadePerson.addHobby(newDTO.getId(), 1);
+//    }
+//
+//    @Test
+//    public void testAddAllHobbies() {
+//        CityInfoDTO ciDTO = new CityInfoDTO("2450", "Vejle");
+//        AddressDTO aDTO = new AddressDTO("vejlevej", "Her bor Jan", ciDTO);
+//        PersonDTO pDTO = new PersonDTO("jan@123.dk", "jan", "Langballe", aDTO);
+//        FacadePerson facadePerson = FacadePerson.getFacadePerson(emf);
+//        PersonDTO newDTO =  facadePerson.create(pDTO);
+//        newDTO.addHobbyDTO(facade.getHobbyByID(1));
+//        newDTO.addHobbyDTO(facade.getHobbyByID(2));
+//        newDTO.addHobbyDTO(facade.getHobbyByID(3));
+//        facadePerson.addAllHobbies(newDTO);
+//    }
 
 }

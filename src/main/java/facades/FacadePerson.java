@@ -37,7 +37,6 @@ public class FacadePerson {
             person.addPhone(new Phone(phoneDTO));
         });
 
-
         // Loop through all hobbyDTOs and add them to the new person entity. OBS: we don't create new hobby entities
         // but we find the existing hobbies from the database and pair them with the person.
         personDTO.getHobbyDTOList().forEach(hobbyDTO -> {
@@ -56,7 +55,6 @@ public class FacadePerson {
             em.persist(cityInfo);
             em.persist(address);
             em.persist(person);
-            person.getHobbyList().forEach(em::merge);
             person.getPhoneList().forEach(em::persist);
 
             em.getTransaction().commit();
@@ -66,25 +64,6 @@ public class FacadePerson {
         return new PersonDTO(person);
     }
 
-
-    // Being used before updating a persons infos
-    public PersonDTO removeAllHobbies(PersonDTO personDTO) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            Person person = em.find(Person.class, personDTO.getId());
-            em.getTransaction().begin();
-            personDTO.getHobbyDTOList().forEach(hobbyDTO -> {
-                person.removeHobby(em.find(Hobby.class, hobbyDTO.getId()));
-            });
-            em.merge(person);
-            em.getTransaction().commit();
-
-            return new PersonDTO(person);
-
-        } finally {
-            em.close();
-        }
-    }
 
     public PersonDTO getById(long id) {
         EntityManager em = emf.createEntityManager();
@@ -138,6 +117,9 @@ public class FacadePerson {
 
     // Updates everything, but NOT hobbies
     public PersonDTO update(PersonDTO personDTO) {
+        // Its being done in a separate method, because we caught an error otherwise.
+        removeAllHobbies(personDTO);
+
         EntityManager em = emf.createEntityManager();
 
         // Read entities from DB
@@ -179,9 +161,25 @@ public class FacadePerson {
         em.merge(address);
         em.merge(person);
         person.getPhoneList().forEach(em::merge);
-        person.getHobbyList().forEach(em::merge);
         em.getTransaction().commit();
 
         return new PersonDTO(person);
+    }
+
+    // Being used before updating a persons infos
+    private void removeAllHobbies(PersonDTO personDTO) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            Person person = em.find(Person.class, personDTO.getId());
+            em.getTransaction().begin();
+            personDTO.getHobbyDTOList().forEach(hobbyDTO -> {
+                person.removeHobby(em.find(Hobby.class, hobbyDTO.getId()));
+            });
+            em.merge(person);
+            em.getTransaction().commit();
+
+        } finally {
+            em.close();
+        }
     }
 }
