@@ -1,0 +1,38 @@
+POST https://eskecphbusiness.dk/ca1/api/person/
+Content-Type: application/json
+
+{
+  "email": "Bob4@mail.dk",
+  "firstName": "James",
+  "lastName": "Bond",
+  "addressDTO": {
+
+    "street": "Lalavej 13",
+    "additionalInfo": "2 tv",
+    "cityInfoDTO": {
+
+      "zipCode": "2500",
+      "city": "Valby"
+    }
+  },
+  "phoneList": [
+    {
+    "number": "112112",
+    "description": "Hjem"
+  }
+  ],
+  "hobbyDTOList": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    },
+    {
+      "id": 3
+    }
+  ]
+}
+
+
+

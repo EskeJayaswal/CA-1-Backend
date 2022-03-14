@@ -19,6 +19,8 @@ public class PersonResource {
     private static final FacadePerson FACADE = FacadePerson.getFacadePerson(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    // TODO: Handle errors when adding hobbies with invalid ID's
+
     @Path("count")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
