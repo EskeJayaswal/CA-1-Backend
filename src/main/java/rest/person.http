@@ -1,0 +1,104 @@
+### New testing
+
+POST http://localhost:8080/ca1_war_exploded/api/person/
+Content-Type: application/json
+
+
+{
+
+  "email": "Bob4@mail.dk",
+  "firstName": "James",
+  "lastName": "Gok",
+  "addressDTO": {
+
+    "street": "Lalavej 13",
+    "additionalInfo": "2 tv",
+    "cityInfoDTO": {
+
+      "zipCode": "2500",
+      "city": "Valby"
+    }
+  },
+  "phoneList": [
+    {
+    "number": "599999999",
+    "description": "Hjem"
+  }
+  ],
+  "hobbyDTOList": [
+    {
+      "id": 1
+    },
+    {
+      "id": 2
+    },
+    {
+      "id": 3
+    }
+  ]
+}
+
+
+
+
+###
+
+GET http://localhost:8080/ca1_war_exploded/api/person/29
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/ca1_war_exploded/api/person/29
+Content-Type: application/json
+
+{
+
+  "email": "Bjarke@mail.dk",
+  "firstName": "james",
+  "lastName": "Gok",
+  "addressDTO": {
+
+    "street": "Lalavej 13",
+    "additionalInfo": "2 tv",
+    "cityInfoDTO": {
+
+      "zipCode": "2500",
+      "city": "Valby"
+    }
+  },
+  "phoneList": [
+    {
+      "number": "9876",
+      "description": "Hjem"
+    },
+    {
+      "number": "699999999",
+      "description": "Work"
+    }
+  ],
+  "hobbyDTOList": [
+    {
+      "id": 1
+    },
+    {
+      "id": 3
+    }
+  ]
+}
+
+###
+
+GET http://localhost:8080/ca1_war_exploded/api/person/phone/36164523
+Content-Type: application/json
+
+
+###
+
+#PUT http://localhost:8080/ca1_war_exploded/api/person/removehobbies/20
+#Content-Type: application/json
+
+###
+
+GET http://localhost:8080/ca1_war_exploded/api/person/hobby/1
+Content-Type: application/json
+

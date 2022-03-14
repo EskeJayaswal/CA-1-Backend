@@ -6,8 +6,12 @@
 package facades;
 
 import dtos.RenameMeDTO;
-import entities.RenameMe;
+import entities.*;
+
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
 import utils.EMF_Creator;
 
 /**
@@ -15,15 +19,38 @@ import utils.EMF_Creator;
  * @author tha
  */
 public class Populator {
-    public static void populate(){
-        EntityManagerFactory emf = EMF_Creator.createEntityManagerFactory();
-        FacadeExample fe = FacadeExample.getFacadeExample(emf);
-        fe.create(new RenameMeDTO(new RenameMe("First 1", "Last 1")));
-        fe.create(new RenameMeDTO(new RenameMe("First 2", "Last 2")));
-        fe.create(new RenameMeDTO(new RenameMe("First 3", "Last 3")));
+    public static void newPopulator() {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("pu");
+        EntityManager em = emf.createEntityManager();
+
+        Phone phone = new Phone("23984312", "Work");
+        Person person = new Person("loadsfsdfl@wow.dk", "Bobby", "Anderson");
+        Address address = new Address("Alkovej 1", "Bla bla");
+        CityInfo cityInfo = new CityInfo("1234", "Aarhus");
+        Hobby hobby = new Hobby("Football", "NFL");
+
+//        cityInfo.addAddress(address);
+//        address.addPerson(person);
+//        person.addPhone(phone);
+//        person.addHobby(hobby);
+
+        try {
+            em.getTransaction().begin();
+//            em.persist(hobby);
+//            em.persist(cityInfo);
+//            em.persist(address);
+            em.persist(person);
+//            em.persist(phone);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
     }
     
     public static void main(String[] args) {
-        populate();
+//        populate();
+        newPopulator();
     }
+
+
 }

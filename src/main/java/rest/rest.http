@@ -1,0 +1,92 @@
+POST http://localhost:8080/ca1_war_exploded/api/person/addperson
+Content-Type: application/json
+
+{
+  "email": "apiEmail",
+  "firstName": "apiFirstName",
+  "lastName": "apiLastName",
+  "street": "apiStreet",
+  "additionalInfo": "apiAdditionalInfo",
+  "zipCode": "apiZipCode",
+  "city": "apiCity",
+  "phone": [
+    {
+      "number": "apiNumber1",
+      "description": "apiDescription1"
+    },
+    {
+      "number": "apiNumber2",
+      "description": "apiDescription2"
+    }
+  ]
+}
+
+###
+
+POST http://localhost:8080/ca1_war_exploded/api/person/addhobby
+Content-Type: application/json
+
+{
+  "personId": 23,
+  "hobbyId": 2
+}
+
+###
+
+POST http://localhost:8080/ca1_war_exploded/api/person/addhobbies
+Content-Type: application/json
+
+{
+  "personId": 20,
+  "hobbies": [
+    1, 2, 3
+  ]
+}
+
+###
+
+GET http://localhost:8080/ca1_war_exploded/api/person/infophone
+Content-Type: application/json
+
+{
+  "number": "apiNumber1"
+}
+
+###
+
+GET http://localhost:8080/ca1_war_exploded/api/person/info23
+Content-Type: application/json
+
+###
+
+GET http://localhost:8080/ca1_war_exploded/api/person/hobby1
+Content-Type: application/json
+
+###
+
+PUT http://localhost:8080/ca1_war_exploded/api/person/update23
+Content-Type: application/json
+
+{
+  "email": "Charlie@Chappefar.dk",
+  "firstName": "Charlie",
+  "lastName": "Chaplin",
+  "street": "Nordpolen 2",
+  "additionalInfo": "Ved siden af julemanden",
+  "zipCode": "666",
+  "city": "Juleby",
+  "phone": [
+    {
+      "number": "1684668+",
+      "description": "Job"
+    },
+    {
+      "number": "6761++",
+      "description": "Home"
+    }
+  ]
+}
+
+
+
+

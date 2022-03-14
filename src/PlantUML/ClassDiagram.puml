@@ -1,0 +1,69 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class Address{
+long id
+String street
+String additionalInfo
+List<Person> personList
+CityInfo cityInfo
+Address()
+Address(String street, String additionalInfo)
+Address(AddresDTO aDTO)
+Get/Set()
+}
+class CityInfo {
+long id
+String zipCode
+String city
+List<Address> addressList
+CityInfo()
+CityInfo(String zipCode, String city)
+CityInfo(CityDTO ciDTO)
+Get/Set()
+}
+class Hobby {
+long id
+String name
+String description
+List<Person> personList
+Hobby()
+Hobby(String name, String description)
+Hobby(HobbyDTO hobbyDTO)
+Get/Set()
+}
+class Person {
+long id
+String email
+String firstName
+String lastName
+List<Hobby> hobbyList
+List<Phone> phoneList
+Address address
+Person()
+Person(String email, String firstName, String lastName)
+Person(PersonDTO pDTO)
+Get/Set()
+}
+class Phone {
+long id
+String number
+String description
+Person person
+Phone()
+Phone(String number, String description)
+Phone(PhoneDTO phoneDTO)
+Get/Set()
+}
+
+'Relations'
+
+CityInfo "1"--*"*" Address
+
+Address "1"--*"*" Person
+
+Phone "*"*--"1" Person
+
+Hobby "*"*--*"*" Person
+
+@enduml
