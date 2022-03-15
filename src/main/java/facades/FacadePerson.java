@@ -18,6 +18,12 @@ public class FacadePerson {
     private static FacadePerson instance;
     private static EntityManagerFactory emf;
 
+    // Copy of other facades
+    private static FacadeCityInfo facadeCityInfo;
+    private static FacadeAddress facadeAddress;
+    private static  FacadeHobby facadeHobby;
+    private static  FacadePhone facadePhone;
+
     public FacadePerson() {
     }
 
@@ -25,6 +31,10 @@ public class FacadePerson {
         if (instance == null) {
             emf = _emf;
             instance = new FacadePerson();
+            facadeCityInfo = FacadeCityInfo.getFacadeCityInfo(emf);
+            facadeAddress = FacadeAddress.getFacadeAddress(emf);
+            facadeHobby = FacadeHobby.getFacadeHobby(emf);
+            facadePhone = FacadePhone.getFacadePhone(emf);
         }
         return instance;
     }
@@ -58,7 +68,7 @@ public class FacadePerson {
     }
 
     public List<PersonDTO> getPersonsWithHobby(long hobbyId) throws EntityNotFoundException {
-        FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyId);
+        facadeHobby.getHobbyByID(hobbyId);
         EntityManager em = emf.createEntityManager();
         TypedQuery<Person> typedQueryPerson
                 = em.createQuery("SELECT p FROM Person p LEFT JOIN p.hobbyList h WHERE h.id=" + hobbyId, Person.class);
@@ -92,10 +102,10 @@ public class FacadePerson {
         EntityManager em = emf.createEntityManager();
 
 
-        CityInfo cityInfo = FacadeCityInfo.getFacadeCityInfo(emf).getCityInfoByZip(
+        CityInfo cityInfo = facadeCityInfo.getCityInfoByZip(
                 personDTO.getAddressDTO().getCityInfoDTO().getZipCode()
         );
-        Address address = new Address(FacadeAddress.getFacadeAddress(emf).findOrCreate(personDTO.getAddressDTO()));
+        Address address = new Address(facadeAddress.findOrCreate(personDTO.getAddressDTO()));
         Person person = new Person(personDTO);
 
         updatePhone(personDTO, person);
@@ -120,7 +130,7 @@ public class FacadePerson {
     // Update person
     public PersonDTO update(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
         EntityManager em = emf.createEntityManager();
-        FacadeCityInfo facadeCityInfo = FacadeCityInfo.getFacadeCityInfo(emf);
+
 
         Person person = em.find(Person.class, personDTO.getId());                       // Read Person entity from DB
         Address address = person.getAddress();
@@ -133,7 +143,7 @@ public class FacadePerson {
 
         if (!sameAddress(personDTO, address)) {
             System.out.println("im here");
-            address = new Address(FacadeAddress.getFacadeAddress(emf).findOrCreate(personDTO.getAddressDTO()));
+            address = new Address(facadeAddress.findOrCreate(personDTO.getAddressDTO()));
             cityInfo.addAddress(address);
             address.addPerson(person);
         }
@@ -156,14 +166,14 @@ public class FacadePerson {
 
     private void updatePhone(PersonDTO personDTO, Person person) throws EntityAlreadyExistsException, EntityNotFoundException {
         for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {                            // Check for updates on every phone number
-            if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber()))
+            if (facadePhone.alreadyExists(phoneDTO.getNumber()))
                 throw new EntityAlreadyExistsException("Phone number: " + phoneDTO.getNumber() + " already exists in the database");
 
             person.addPhone(new Phone(phoneDTO));
         }
 
         for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
-            person.addHobby(FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyDTO.getId()));
+            person.addHobby(facadeHobby.getHobbyByID(hobbyDTO.getId()));
         }
     }
 
@@ -171,7 +181,7 @@ public class FacadePerson {
     // Being used before updating a persons infos
     public void removeAllPhones(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
         for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {        // Check if the new number already exists in database under a different person
-            if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber(), personDTO))
+            if (facadePhone.alreadyExists(phoneDTO.getNumber(), personDTO))
                 throw new EntityAlreadyExistsException("Phone number: " + phoneDTO.getNumber() + " already exists in the database");
         }
 

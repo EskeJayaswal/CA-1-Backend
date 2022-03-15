@@ -28,6 +28,8 @@ public class FacadeCityInfo {
         if (instance == null) {
             emf = _emf;
             instance = new FacadeCityInfo();
+            System.out.println("Testing: If im making a new City Info Facade everytime i call it!");
+
         }
         return instance;
     }
