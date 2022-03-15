@@ -89,6 +89,12 @@ GET http://localhost:8080/ca1_war_exploded/api/person/zipcode/2500
 Content-Type: application/json
 
 ###
+# Populate city info (TEST)
+# TODO: set up person city info to use existing city info entries
+GET http://localhost:8080/ca1_war_exploded/api/person/populate
+Content-Type: application/json
+
+###
 
 #PUT http://localhost:8080/ca1_war_exploded/api/person/removehobbies/20
 #Content-Type: application/json

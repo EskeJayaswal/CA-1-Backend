@@ -11,6 +11,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.List;
 
 @Path("person")
@@ -107,6 +108,16 @@ public class PersonResource {
                 .ok("SUCCESS")
                 .entity(GSON.toJson(updatedPersonDTO))
                 .build();
+    }
+
+    // Testing city info populator
+    // TODO: set up person city info to use existing city info entries
+    @Path("populate")
+    @GET
+    public Response populate() throws IOException, InterruptedException {
+        FacadeCityInfo.getFacadeCityInfo(EMF).populateCityInfo();
+
+        return Response.ok("SUCCESS").build();
     }
 }
 
