@@ -3,13 +3,13 @@ POST http://localhost:8080/ca1_war_exploded/api/person/
 Content-Type: application/json
 
 {
-  "email": "JamesBond@mail.dk",
-  "firstName": "James",
-  "lastName": "Bond",
+  "email": "MikkelRaev@mail.dk",
+  "firstName": "Mikkel",
+  "lastName": "Raev",
   "addressDTO": {
 
-    "street": "Bondvej",
-    "additionalInfo": "2 tv",
+    "street": "Skovej",
+    "additionalInfo": "54",
     "cityInfoDTO": {
 
       "zipCode": "2500",
@@ -18,7 +18,7 @@ Content-Type: application/json
   },
   "phoneList": [
     {
-    "number": "007",
+    "number": "818",
     "description": "Home"
   }
   ],
@@ -81,6 +81,11 @@ Content-Type: application/json
 ###
 # Get persons with given hobby
 GET http://localhost:8080/ca1_war_exploded/api/person/hobby/1
+Content-Type: application/json
+
+###
+# Get persons with zipcode
+GET http://localhost:8080/ca1_war_exploded/api/person/zipcode/2500
 Content-Type: application/json
 
 ###

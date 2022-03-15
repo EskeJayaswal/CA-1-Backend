@@ -69,6 +69,24 @@ public class FacadePerson {
         return personDTOList;
     }
 
+    public List<PersonDTO> getPersonsInCity(String zipCode) {
+        EntityManager em = emf.createEntityManager();
+
+        TypedQuery<Person> typedQueryPerson
+                = em.createQuery(
+                        "SELECT p FROM Person p, Address a, CityInfo ci " +
+                                "WHERE p.address.id = a.id " +
+                                "and a.cityInfo.id = ci.id " +
+                                "and ci.zipCode = " + zipCode, Person.class);
+        List<Person> personList = typedQueryPerson.getResultList();
+
+        List<PersonDTO> personDTOList = new ArrayList<>();
+        for (Person p : personList) {
+            personDTOList.add(new PersonDTO(p));
+        }
+        return personDTOList;
+    }
+
     public PersonDTO create(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
         EntityManager em = emf.createEntityManager();
         CityInfo cityInfo = new CityInfo(personDTO.getAddressDTO().getCityInfoDTO());

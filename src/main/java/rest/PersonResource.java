@@ -19,8 +19,6 @@ public class PersonResource {
     private static final FacadePerson FACADE = FacadePerson.getFacadePerson(EMF);
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    // TODO: Handle errors when adding hobbies with invalid ID's
-
     @Path("count")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
@@ -40,6 +38,16 @@ public class PersonResource {
                 .build();
     }
 
+    // Get all info from a person by phone number
+    @Path("phone/{number}")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Response getPersonByPhone(@PathParam("number") String number) throws EntityNotFoundException {
+        PersonDTO personDTO = FACADE.getByPhoneNumber(number);
+        return Response.ok().entity(GSON.toJson(personDTO)).build();
+    }
+
     // Get all persons with a given hobby ID
     @Path("hobby/{id}")
     @GET
@@ -50,6 +58,20 @@ public class PersonResource {
         return Response
                 .ok()
                 .entity(GSON.toJson(personsWithHobby))
+                .build();
+    }
+
+    // Get all persons with a zipcode
+    @Path("zipcode/{zipCode}")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON})
+    public Response getPersonsWithZipCode(@PathParam("zipCode") String zipCode) throws EntityNotFoundException {
+        CityInfoDTO cityInfoDTO = FacadeCityInfo.getFacadeCityInfo(EMF).getCityInfoByZip(zipCode);
+        List<PersonDTO> personsWithZipcode = FACADE.getPersonsInCity(cityInfoDTO.getZipCode());
+
+        return Response
+                .ok()
+                .entity(GSON.toJson(personsWithZipcode))
                 .build();
     }
 
@@ -85,16 +107,6 @@ public class PersonResource {
                 .ok("SUCCESS")
                 .entity(GSON.toJson(updatedPersonDTO))
                 .build();
-    }
-
-    // Get all info from a person by phone number
-    @Path("phone/{number}")
-    @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    @Consumes({MediaType.APPLICATION_JSON})
-    public Response getPersonByPhone(@PathParam("number") String number) throws EntityNotFoundException {
-        PersonDTO personDTO = FACADE.getByPhoneNumber(number);
-        return Response.ok().entity(GSON.toJson(personDTO)).build();
     }
 }
 
