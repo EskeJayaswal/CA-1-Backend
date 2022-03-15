@@ -18,7 +18,8 @@ public class FacadePerson {
     private static FacadePerson instance;
     private static EntityManagerFactory emf;
 
-    public FacadePerson() {}
+    public FacadePerson() {
+    }
 
     public static FacadePerson getFacadePerson(EntityManagerFactory _emf) {
         if (instance == null) {
@@ -41,7 +42,7 @@ public class FacadePerson {
         EntityManager em = emf.createEntityManager();
         Person person = em.find(Person.class, id);
         if (person == null)
-            throw new EntityNotFoundException("The Person entity with ID: '"+id+"' was not found");
+            throw new EntityNotFoundException("The Person entity with ID: '" + id + "' was not found");
         return new PersonDTO(person);
     }
 
@@ -50,7 +51,7 @@ public class FacadePerson {
 
         TypedQuery<Person> typedQuery = em.createQuery("SELECT p FROM Phone ph JOIN ph.person p WHERE ph.number =" + phoneNumber, Person.class);
         if (typedQuery.getResultList().size() == 0)
-            throw new EntityNotFoundException("The Person entity with phone number: '"+phoneNumber+"' was not found");
+            throw new EntityNotFoundException("The Person entity with phone number: '" + phoneNumber + "' was not found");
         Person person = typedQuery.getSingleResult();
 
         return new PersonDTO(person);
@@ -74,10 +75,10 @@ public class FacadePerson {
 
         TypedQuery<Person> typedQueryPerson
                 = em.createQuery(
-                        "SELECT p FROM Person p, Address a, CityInfo ci " +
-                                "WHERE p.address.id = a.id " +
-                                "and a.cityInfo.id = ci.id " +
-                                "and ci.zipCode = " + zipCode, Person.class);
+                "SELECT p FROM Person p, Address a, CityInfo ci " +
+                        "WHERE p.address.id = a.id " +
+                        "and a.cityInfo.id = ci.id " +
+                        "and ci.zipCode = " + zipCode, Person.class);
         List<Person> personList = typedQueryPerson.getResultList();
 
         List<PersonDTO> personDTOList = new ArrayList<>();
@@ -90,23 +91,14 @@ public class FacadePerson {
     public PersonDTO create(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
         EntityManager em = emf.createEntityManager();
 
+
         CityInfo cityInfo = FacadeCityInfo.getFacadeCityInfo(emf).getCityInfoByZip(
                 personDTO.getAddressDTO().getCityInfoDTO().getZipCode()
         );
-        Address address = new Address(FacadeAddress.getFacadeAddress(emf).findOrCreate(
-                personDTO.getAddressDTO()
-        ));
+        Address address = new Address(FacadeAddress.getFacadeAddress(emf).findOrCreate(personDTO.getAddressDTO()));
         Person person = new Person(personDTO);
 
-        for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {        // Loop through all phoneDTOs and add them to the new person entity
-            if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber()))
-                throw new EntityAlreadyExistsException("Phone number: "+ phoneDTO.getNumber() +" already exists in the database");
-            person.addPhone(new Phone(phoneDTO));
-        }
-
-        for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
-            person.addHobby(FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyDTO.getId()));
-        }
+        updatePhone(personDTO, person);
 
         cityInfo.addAddress(address);                               // Add references for bi-directional relationships.
         address.addPerson(person);
@@ -115,50 +107,39 @@ public class FacadePerson {
             em.getTransaction().begin();
             em.merge(cityInfo);
             em.merge(address);
-            Person personTest = em.merge(person);
-            System.out.println("PersonTest ID: "+ personTest.getId());
+            em.merge(person);
             person.getPhoneList().forEach(em::merge);
             em.getTransaction().commit();
         } finally {
             em.close();
         }
+        // TODO: Find better solution
         return getByPhoneNumber(person.getPhoneList().get(0).getNumber());
     }
 
     // Update person
     public PersonDTO update(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
         EntityManager em = emf.createEntityManager();
-        Person person = em.find(Person.class, personDTO.getId());                       // Read Person entity from DB
-        Address address = em.find(Address.class, person.getAddress().getId());          // Read Address entity from DB
+        FacadeCityInfo facadeCityInfo = FacadeCityInfo.getFacadeCityInfo(emf);
 
-        CityInfo cityInfo = FacadeCityInfo.getFacadeCityInfo(emf).getCityInfoByZip(
-                personDTO.getAddressDTO().getCityInfoDTO().getZipCode()
-        );
+        Person person = em.find(Person.class, personDTO.getId());                       // Read Person entity from DB
+        Address address = person.getAddress();
+
+        CityInfo cityInfo = facadeCityInfo.getCityInfoByZip(personDTO.getAddressDTO().getCityInfoDTO().getZipCode());
 
         person.setEmail(personDTO.getEmail());                                          // Update Person entity
         person.setFirstName(personDTO.getFirstName());
         person.setFirstName(personDTO.getLastName());
 
-        // TODO: Not the best method
-        if (!personDTO.getAddressDTO().getStreet().equals(person.getAddress().getStreet())
-        || !personDTO.getAddressDTO().getCityInfoDTO().getZipCode().equals(person.getAddress().getCityInfo().getZipCode())) {
-            System.out.println("WE MADE IT HERE!!");
+        if (!sameAddress(personDTO, address)) {
+            System.out.println("im here");
             address = new Address(FacadeAddress.getFacadeAddress(emf).findOrCreate(personDTO.getAddressDTO()));
-            cityInfo.addAddress(address);                               // Add references for bi-directional relationships.
+            cityInfo.addAddress(address);
             address.addPerson(person);
         }
 
-        for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {                            // Check for updates on every phone number
-            if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber()))
-                throw new EntityAlreadyExistsException("Phone number: "+ phoneDTO.getNumber() +" already exists in the database");
+        updatePhone(personDTO, person);
 
-            person.addPhone(new Phone(phoneDTO));
-        }
-
-        for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
-            person.addHobby(FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyDTO.getId()));
-        }
-        
         try {
             em.getTransaction().begin();
             em.merge(cityInfo);
@@ -173,18 +154,32 @@ public class FacadePerson {
         return new PersonDTO(person);
     }
 
+    private void updatePhone(PersonDTO personDTO, Person person) throws EntityAlreadyExistsException, EntityNotFoundException {
+        for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {                            // Check for updates on every phone number
+            if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber()))
+                throw new EntityAlreadyExistsException("Phone number: " + phoneDTO.getNumber() + " already exists in the database");
+
+            person.addPhone(new Phone(phoneDTO));
+        }
+
+        for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
+            person.addHobby(FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyDTO.getId()));
+        }
+    }
+
+
     // Being used before updating a persons infos
     public void removeAllPhones(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
         for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {        // Check if the new number already exists in database under a different person
             if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber(), personDTO))
-                throw new EntityAlreadyExistsException("Phone number: "+ phoneDTO.getNumber() +" already exists in the database");
+                throw new EntityAlreadyExistsException("Phone number: " + phoneDTO.getNumber() + " already exists in the database");
         }
 
         EntityManager em = emf.createEntityManager();
         try {
             Person person = em.find(Person.class, personDTO.getId());
             if (person == null)
-                throw new EntityNotFoundException("The Person entity with ID: '"+ personDTO.getId() +"' was not found");
+                throw new EntityNotFoundException("The Person entity with ID: '" + personDTO.getId() + "' was not found");
 
             em.getTransaction().begin();
 
@@ -205,7 +200,7 @@ public class FacadePerson {
         try {
             Person person = em.find(Person.class, personDTO.getId());
             if (person == null)
-                throw new EntityNotFoundException("The Person entity with ID: '"+ personDTO.getId() +"' was not found");
+                throw new EntityNotFoundException("The Person entity with ID: '" + personDTO.getId() + "' was not found");
 
             em.getTransaction().begin();
 
@@ -221,21 +216,10 @@ public class FacadePerson {
             em.close();
         }
     }
+
+    private boolean sameAddress(PersonDTO personDTO, Address address) {
+        return (personDTO.getAddressDTO().getStreet().equals(address.getStreet())
+                || personDTO.getAddressDTO().getCityInfoDTO().getZipCode().equals(address.getCityInfo().getZipCode()));
+    }
 }
 
-
-
-// Overflow methods
-
-//    public List<PhoneDTO> getPhoneDTOs(long personId) {
-//        EntityManager em = emf.createEntityManager();
-//        TypedQuery<Phone> typedQueryPhone
-//                = em.createQuery("SELECT p FROM Phone p WHERE p.person.id= " + personId, Phone.class);
-//
-//        List<Phone> phoneList = typedQueryPhone.getResultList();
-//        List<PhoneDTO> phoneDTOList = new ArrayList<>();
-//        for (Phone p : phoneList) {
-//            phoneDTOList.add(new PhoneDTO(p));
-//        }
-//        return phoneDTOList;
-//    }

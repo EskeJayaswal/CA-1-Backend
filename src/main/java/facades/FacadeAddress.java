@@ -56,7 +56,7 @@ public class FacadeAddress {
 
         List<Address> addressList = typedQueryAddress.getResultList();
         if (addressList.size() != 0) {
-            System.out.println("Address list is NOT empty");
+//            System.out.println("Address list is NOT empty");
             return new AddressDTO(addressList.get(0));
         }
         else {
@@ -73,21 +73,21 @@ public class FacadeAddress {
         }
     }
 
-    public AddressDTO updateAddress(long personId, String street, String addInfo) {
-        EntityManager em = emf.createEntityManager();
-        Person person = em.find(Person.class, personId);
-        Address address = person.getAddress();
-        address.setStreet(street);
-        address.setAdditionalInfo(addInfo);
-
-        try {
-            em.getTransaction().begin();
-            em.merge(address);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-
-        return new AddressDTO(address);
-    }
+//    public AddressDTO updateAddress(long personId, String street, String addInfo) {
+//        EntityManager em = emf.createEntityManager();
+//        Person person = em.find(Person.class, personId);
+//        Address address = person.getAddress();
+//        address.setStreet(street);
+//        address.setAdditionalInfo(addInfo);
+//
+//        try {
+//            em.getTransaction().begin();
+//            em.merge(address);
+//            em.getTransaction().commit();
+//        } finally {
+//            em.close();
+//        }
+//
+//        return new AddressDTO(address);
+//    }
 }

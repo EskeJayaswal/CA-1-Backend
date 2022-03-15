@@ -32,18 +32,18 @@ public class FacadeCityInfo {
         return instance;
     }
 
-    public CityInfoDTO create(CityInfoDTO ciDTO) {
-        CityInfo ci = new CityInfo(ciDTO);
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(ci);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-        return new CityInfoDTO(ci);
-    }
+//    public CityInfoDTO create(CityInfoDTO ciDTO) {
+//        CityInfo ci = new CityInfo(ciDTO);
+//        EntityManager em = emf.createEntityManager();
+//        try {
+//            em.getTransaction().begin();
+//            em.persist(ci);
+//            em.getTransaction().commit();
+//        } finally {
+//            em.close();
+//        }
+//        return new CityInfoDTO(ci);
+//    }
 
     public List<CityInfoDTO> create(List<CityInfoDTO> ciDTOs) {
         List<CityInfoDTO> cityInfoDTOList = new ArrayList<>();
@@ -71,22 +71,22 @@ public class FacadeCityInfo {
         }
     }
 
-    public CityInfoDTO updateCityInfo(long personId, String zipCode, String city) {
-        EntityManager em = emf.createEntityManager();
-        Person person = em.find(Person.class, personId);
-        CityInfo cityInfo = person.getAddress().getCityInfo();
-        cityInfo.setZipCode(zipCode);
-        cityInfo.setCity(city);
-
-        try {
-            em.getTransaction().begin();
-            em.merge(cityInfo);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-        return new CityInfoDTO(cityInfo);
-    }
+//    public CityInfoDTO updateCityInfo(long personId, String zipCode, String city) {
+//        EntityManager em = emf.createEntityManager();
+//        Person person = em.find(Person.class, personId);
+//        CityInfo cityInfo = person.getAddress().getCityInfo();
+//        cityInfo.setZipCode(zipCode);
+//        cityInfo.setCity(city);
+//
+//        try {
+//            em.getTransaction().begin();
+//            em.merge(cityInfo);
+//            em.getTransaction().commit();
+//        } finally {
+//            em.close();
+//        }
+//        return new CityInfoDTO(cityInfo);
+//    }
 
     public CityInfo getCityInfoById(long id) throws EntityNotFoundException {
         EntityManager em = emf.createEntityManager();
@@ -106,6 +106,7 @@ public class FacadeCityInfo {
         }
         return cityInfoList.get(0);
     }
+
 
     public CityInfoDTO getCityInfoDTOByZip(String zipCode) throws EntityNotFoundException {
         return new CityInfoDTO(getCityInfoByZip(zipCode));
