@@ -21,12 +21,10 @@ public class Address {
     @Column(name = "additional_info")
     private String additionalInfo;
 
-    @OneToMany(
-            mappedBy = "address"
-    )
+    @OneToMany(mappedBy = "address", cascade = CascadeType.PERSIST)
     private List<Person> personList = new ArrayList<>();
 
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "city_info_id")
     private CityInfo cityInfo;
 
@@ -39,6 +37,8 @@ public class Address {
     }
 
     public Address(AddressDTO aDTO) {
+        if (aDTO.getId() != null)
+            this.id = aDTO.getId();
         this.street = aDTO.getStreet();
         this.additionalInfo = aDTO.getAdditionalInfo();
     }

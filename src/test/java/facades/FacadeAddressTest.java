@@ -3,6 +3,7 @@ package facades;
 import dtos.AddressDTO;
 import dtos.CityInfoDTO;
 import entities.Address;
+import errorhandling.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -47,7 +48,7 @@ class FacadeAddressTest {
     }
 
     @Test
-    public void testCreateMethod() {
+    public void testCreateMethod() throws EntityNotFoundException {
         CityInfoDTO ciDTO = new CityInfoDTO("2510", "SimCity");
         AddressDTO aDTO = new AddressDTO("Roadname", "North of South", ciDTO);
         facade.create(aDTO);

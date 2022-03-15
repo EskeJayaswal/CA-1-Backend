@@ -21,7 +21,7 @@ public class CityInfo {
     @Column(name = "city")
     private String city;
 
-    @OneToMany(mappedBy = "cityInfo")
+    @OneToMany(mappedBy = "cityInfo", cascade = CascadeType.PERSIST)
     private List<Address> addressList = new ArrayList<>();
 
     public CityInfo() {}
@@ -32,6 +32,8 @@ public class CityInfo {
     }
 
     public CityInfo(CityInfoDTO ciDTO) {
+        if (ciDTO.getId() != null)
+            this.id = ciDTO.getId();
         this.zipCode = ciDTO.getZipCode();
         this.city = ciDTO.getCity();
     }

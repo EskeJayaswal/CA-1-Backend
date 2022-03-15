@@ -1,5 +1,6 @@
 package rest;
 
+import errorhandling.APIExceptionMapper;
 import errorhandling.EntityAlreadyExistsExceptionMapper;
 import errorhandling.EntityNotFoundExceptionMapper;
 
@@ -24,11 +25,17 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(errorhandling.GenericExceptionMapper.class);
-        resources.add(EntityNotFoundExceptionMapper.class);
+
+        resources.add(APIExceptionMapper.class);
         resources.add(EntityAlreadyExistsExceptionMapper.class);
+        resources.add(EntityNotFoundExceptionMapper.class);
+
         resources.add(org.glassfish.jersey.server.wadl.internal.WadlResource.class);
+
         resources.add(rest.RenameMeResource.class);
         resources.add(rest.PersonResource.class);
+        resources.add(rest.CityInfoResource.class);
+        resources.add(rest.HobbyResource.class);
     }
     
 }

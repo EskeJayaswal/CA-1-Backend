@@ -45,14 +45,27 @@ public class FacadeCityInfo {
         return new CityInfoDTO(ci);
     }
 
-    public void create(List<CityInfoDTO> ciDTOs) {
+    public List<CityInfoDTO> create(List<CityInfoDTO> ciDTOs) {
+        List<CityInfoDTO> cityInfoDTOList = new ArrayList<>();
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
             for (CityInfoDTO ciDTO : ciDTOs) {
-                em.persist(new CityInfo(ciDTO));
+                CityInfo cityInfo = new CityInfo(ciDTO);
+                em.persist(cityInfo);
+                cityInfoDTOList.add(new CityInfoDTO(cityInfo));
             }
             em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        return cityInfoDTOList;
+    }
+
+    public long getCityInfoCount() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return (long) em.createQuery("SELECT COUNT(ci) FROM CityInfo ci").getSingleResult();
         } finally {
             em.close();
         }
@@ -83,7 +96,7 @@ public class FacadeCityInfo {
         return cityInfo;
     }
 
-    public CityInfoDTO getCityInfoByZip(String zipCode) throws EntityNotFoundException {
+    public CityInfo getCityInfoByZip(String zipCode) throws EntityNotFoundException {
         EntityManager em = emf.createEntityManager();
         TypedQuery<CityInfo> tq = em.createQuery("SELECT c FROM CityInfo c  WHERE c.zipCode = " + zipCode, CityInfo.class);
         List<CityInfo> cityInfoList = tq.getResultList();
@@ -91,11 +104,31 @@ public class FacadeCityInfo {
         if (cityInfoList.size() == 0) {
             throw new EntityNotFoundException("Zipcode: '"+ zipCode +"' was not found");
         }
-
-        return new CityInfoDTO(cityInfoList.get(0));
+        return cityInfoList.get(0);
     }
 
-    public void populateCityInfo() throws IOException, InterruptedException {
+    public CityInfoDTO getCityInfoDTOByZip(String zipCode) throws EntityNotFoundException {
+        return new CityInfoDTO(getCityInfoByZip(zipCode));
+    }
+
+
+    public List<CityInfoDTO> getAllCityInfo() throws EntityNotFoundException {
+        EntityManager em = emf.createEntityManager();
+        TypedQuery<CityInfo> typedQueryCI
+                = em.createQuery("SELECT ci FROM CityInfo ci", CityInfo.class);
+        List<CityInfo> cityInfoList = typedQueryCI.getResultList();
+
+        if (cityInfoList.size() == 0)
+            throw new EntityNotFoundException("No CityInfo entities exist. Call '.../api/cityinfo/populate' to populate the database with valid CityInfo data");
+
+        List<CityInfoDTO> cityInfoDTOList = new ArrayList<>();
+        for (CityInfo ci : cityInfoList) {
+            cityInfoDTOList.add(new CityInfoDTO(ci));
+        }
+        return cityInfoDTOList;
+    }
+
+    public List<CityInfoDTO> populateCityInfo() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create("https://api.dataforsyningen.dk/postnumre")).build();
 
@@ -110,11 +143,6 @@ public class FacadeCityInfo {
 
             ciDTOs.add(new CityInfoDTO(zipCode, city));
         }
-        create(ciDTOs);
-    }
-
-    public static void main(String[] args) throws IOException, InterruptedException {
-        FacadeCityInfo facade = getFacadeCityInfo(emf);
-        facade.populateCityInfo();
+        return create(ciDTOs);
     }
 }

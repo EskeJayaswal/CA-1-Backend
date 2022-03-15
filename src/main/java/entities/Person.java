@@ -35,7 +35,7 @@ public class Person {
     @OneToMany(mappedBy = "person", orphanRemoval = true)
     private List<Phone> phoneList = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "address_id")
     private Address address;
 

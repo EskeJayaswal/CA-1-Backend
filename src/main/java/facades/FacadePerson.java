@@ -89,8 +89,15 @@ public class FacadePerson {
 
     public PersonDTO create(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
         EntityManager em = emf.createEntityManager();
-        CityInfo cityInfo = new CityInfo(personDTO.getAddressDTO().getCityInfoDTO());
-        Address address = new Address(personDTO.getAddressDTO());
+
+        CityInfo cityInfo = FacadeCityInfo.getFacadeCityInfo(emf).getCityInfoByZip(
+                personDTO.getAddressDTO().getCityInfoDTO().getZipCode()
+        );
+        Address address = new Address(FacadeAddress.getFacadeAddress(emf).findOrCreate(
+                personDTO.getAddressDTO()
+        ));
+        System.out.println("Address ID: "+ address.getId());
+//        Address address = new Address(personDTO.getAddressDTO());
         Person person = new Person(personDTO);
 
         for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {        // Loop through all phoneDTOs and add them to the new person entity
@@ -99,24 +106,19 @@ public class FacadePerson {
             person.addPhone(new Phone(phoneDTO));
         }
 
-//        personDTO.getHobbyDTOList().forEach(hobbyDTO -> {           // Find the existing hobbies from database and pair them with person.
-//            person.addHobby(em.find(Hobby.class, hobbyDTO.getId()));
-//        });
-
         for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
             person.addHobby(FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyDTO.getId()));
         }
 
-        cityInfo.addAddress(address);                               // Add references for bi-directional relationships.
+//        cityInfo.addAddress(address);                               // Add references for bi-directional relationships.
         address.addPerson(person);
 
         try {
             em.getTransaction().begin();
-            em.persist(cityInfo);
-            em.persist(address);
+//            em.merge(cityInfo);
+//            em.merge(address);        // TODO: Check if address already exists before creating new
             em.persist(person);
             person.getPhoneList().forEach(em::persist);
-
             em.getTransaction().commit();
         } finally {
             em.close();
@@ -129,7 +131,10 @@ public class FacadePerson {
         EntityManager em = emf.createEntityManager();
         Person person = em.find(Person.class, personDTO.getId());                       // Read Person entity from DB
         Address address = em.find(Address.class, person.getAddress().getId());          // Read Address entity from DB
-        CityInfo cityInfo = em.find(CityInfo.class, address.getCityInfo().getId());     // Read cityInfo entity from DB
+//        CityInfo cityInfo = em.find(CityInfo.class, address.getCityInfo().getId());     // Read cityInfo entity from DB
+        CityInfo cityInfo = FacadeCityInfo.getFacadeCityInfo(emf).getCityInfoByZip(
+                personDTO.getAddressDTO().getCityInfoDTO().getZipCode()
+        );
 
 //        TypedQuery<Phone> tq = em.createQuery("SELECT p FROM Phone p  WHERE p.person.id = " + person.getId(), Phone.class);
 //        List<Phone> phoneList = tq.getResultList();                 // returns list of person numbers already in database

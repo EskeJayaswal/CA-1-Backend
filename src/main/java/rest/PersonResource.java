@@ -67,7 +67,7 @@ public class PersonResource {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Response getPersonsWithZipCode(@PathParam("zipCode") String zipCode) throws EntityNotFoundException {
-        CityInfoDTO cityInfoDTO = FacadeCityInfo.getFacadeCityInfo(EMF).getCityInfoByZip(zipCode);
+        CityInfoDTO cityInfoDTO = FacadeCityInfo.getFacadeCityInfo(EMF).getCityInfoDTOByZip(zipCode);
         List<PersonDTO> personsWithZipcode = FACADE.getPersonsInCity(cityInfoDTO.getZipCode());
 
         return Response
@@ -98,7 +98,10 @@ public class PersonResource {
         PersonDTO personDTO = GSON.fromJson(jsonContext, PersonDTO.class);
         personDTO.setId(id);
 
+        // Check for valid data
         FacadeHobby.getFacadeHobby(EMF).checkValidHobbyIds(personDTO);
+        FacadeCityInfo.getFacadeCityInfo(EMF).getCityInfoByZip(personDTO.getAddressDTO().getCityInfoDTO().getZipCode());
+
         FACADE.removeAllPhones(personDTO);
         FACADE.removeAllHobbies(personDTO);
 
@@ -110,15 +113,15 @@ public class PersonResource {
                 .build();
     }
 
-    // Testing city info populator
-    // TODO: set up person city info to use existing city info entries
-    @Path("populate")
-    @GET
-    public Response populate() throws IOException, InterruptedException {
-        FacadeCityInfo.getFacadeCityInfo(EMF).populateCityInfo();
-
-        return Response.ok("SUCCESS").build();
-    }
+//    // Testing city info populator
+//    // TODO: set up person city info to use existing city info entries
+//    @Path("populate")
+//    @GET
+//    public Response populate() throws IOException, InterruptedException {
+//        FacadeCityInfo.getFacadeCityInfo(EMF).populateCityInfo();
+//
+//        return Response.ok("SUCCESS").build();
+//    }
 }
 
 

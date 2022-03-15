@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddressDTO {
-    private long id;
+    private Long id;
     private String street;
     private String additionalInfo;
 //    private List<PersonDTO> personDTOList;
@@ -34,11 +34,11 @@ public class AddressDTO {
         return aDtos;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

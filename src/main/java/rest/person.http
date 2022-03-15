@@ -18,7 +18,7 @@ Content-Type: application/json
   },
   "phoneList": [
     {
-    "number": "818",
+    "number": "456",
     "description": "Home"
   }
   ],
@@ -89,12 +89,24 @@ GET http://localhost:8080/ca1_war_exploded/api/person/zipcode/2500
 Content-Type: application/json
 
 ###
-# Populate city info (TEST)
-# TODO: set up person city info to use existing city info entries
-GET http://localhost:8080/ca1_war_exploded/api/person/populate
+# Populate CityInfo
+POST http://localhost:8080/ca1_war_exploded/api/cityinfo/populate
 Content-Type: application/json
 
 ###
+# Get all city infos
+GET http://localhost:8080/ca1_war_exploded/api/cityinfo
+Content-Type: application/json
+
+###
+# Populate hobby
+POST http://localhost:8080/ca1_war_exploded/api/hobby/populate
+Content-Type: application/json
+
+###
+# Get all hobbies
+GET http://localhost:8080/ca1_war_exploded/api/hobby
+Content-Type: application/json
 
 #PUT http://localhost:8080/ca1_war_exploded/api/person/removehobbies/20
 #Content-Type: application/json
