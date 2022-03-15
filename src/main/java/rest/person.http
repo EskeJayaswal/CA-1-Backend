@@ -1,4 +1,4 @@
-# Create Person
+# Create Person 1
 POST http://localhost:8080/ca1_war_exploded/api/person/
 Content-Type: application/json
 
@@ -30,6 +30,38 @@ Content-Type: application/json
 }
 
 ###
+# Create Person 2
+POST http://localhost:8080/ca1_war_exploded/api/person/
+Content-Type: application/json
+
+{
+  "email": "MikkelRaev@mail.dk",
+  "firstName": "Mikkel",
+  "lastName": "Raev",
+  "addressDTO": {
+
+    "street": "Skovej",
+    "additionalInfo": "54",
+    "cityInfoDTO": {
+
+      "zipCode": "2500",
+      "city": "Valby"
+    }
+  },
+  "phoneList": [
+    {
+      "number": "879",
+      "description": "Home"
+    }
+  ],
+  "hobbyDTOList": [
+    {
+      "id": 1
+    }
+  ]
+}
+
+###
 # Get info from person with ID
 GET http://localhost:8080/ca1_war_exploded/api/person/1
 Content-Type: application/json
@@ -40,27 +72,23 @@ PUT http://localhost:8080/ca1_war_exploded/api/person/1
 Content-Type: application/json
 
 {
-  "email": "JimmyBondz@mail.dk",
-  "firstName": "Jimmy",
-  "lastName": "Bondz",
+  "email": "BobbyRaev@mail.dk",
+  "firstName": "Bobby",
+  "lastName": "Raev",
   "addressDTO": {
 
-    "street": "Bonzaivej 65",
-    "additionalInfo": "21 tv",
+    "street": "Hillerødvej",
+    "additionalInfo": "57",
     "cityInfoDTO": {
 
-      "zipCode": "2500",
-      "city": "Valby"
+      "zipCode": "3460",
+      "city": "Birkerød"
     }
   },
   "phoneList": [
     {
-      "number": "007",
+      "number": "123",
       "description": "Home"
-    },
-    {
-      "number": "12245",
-      "description": "Work"
     }
   ],
   "hobbyDTOList": [

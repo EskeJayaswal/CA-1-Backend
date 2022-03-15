@@ -96,8 +96,6 @@ public class FacadePerson {
         Address address = new Address(FacadeAddress.getFacadeAddress(emf).findOrCreate(
                 personDTO.getAddressDTO()
         ));
-        System.out.println("Address ID: "+ address.getId());
-//        Address address = new Address(personDTO.getAddressDTO());
         Person person = new Person(personDTO);
 
         for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {        // Loop through all phoneDTOs and add them to the new person entity
@@ -116,7 +114,7 @@ public class FacadePerson {
         try {
             em.getTransaction().begin();
             em.merge(cityInfo);
-            em.merge(address);        // TODO: Check if address already exists before creating new
+            em.merge(address);
             Person personTest = em.merge(person);
             System.out.println("PersonTest ID: "+ personTest.getId());
             person.getPhoneList().forEach(em::merge);
@@ -132,23 +130,23 @@ public class FacadePerson {
         EntityManager em = emf.createEntityManager();
         Person person = em.find(Person.class, personDTO.getId());                       // Read Person entity from DB
         Address address = em.find(Address.class, person.getAddress().getId());          // Read Address entity from DB
-//        CityInfo cityInfo = em.find(CityInfo.class, address.getCityInfo().getId());     // Read cityInfo entity from DB
+
         CityInfo cityInfo = FacadeCityInfo.getFacadeCityInfo(emf).getCityInfoByZip(
                 personDTO.getAddressDTO().getCityInfoDTO().getZipCode()
         );
-
-//        TypedQuery<Phone> tq = em.createQuery("SELECT p FROM Phone p  WHERE p.person.id = " + person.getId(), Phone.class);
-//        List<Phone> phoneList = tq.getResultList();                 // returns list of person numbers already in database
 
         person.setEmail(personDTO.getEmail());                                          // Update Person entity
         person.setFirstName(personDTO.getFirstName());
         person.setFirstName(personDTO.getLastName());
 
-        address.setStreet(personDTO.getAddressDTO().getStreet());                       // Update Address entity
-        address.setAdditionalInfo(personDTO.getAddressDTO().getAdditionalInfo());
-
-        cityInfo.setZipCode(personDTO.getAddressDTO().getCityInfoDTO().getZipCode());   // Update CityInfo entity
-        cityInfo.setCity(personDTO.getAddressDTO().getCityInfoDTO().getCity());
+        // TODO: Not the best method
+        if (!personDTO.getAddressDTO().getStreet().equals(person.getAddress().getStreet())
+        || !personDTO.getAddressDTO().getCityInfoDTO().getZipCode().equals(person.getAddress().getCityInfo().getZipCode())) {
+            System.out.println("WE MADE IT HERE!!");
+            address = new Address(FacadeAddress.getFacadeAddress(emf).findOrCreate(personDTO.getAddressDTO()));
+            cityInfo.addAddress(address);                               // Add references for bi-directional relationships.
+            address.addPerson(person);
+        }
 
         for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {                            // Check for updates on every phone number
             if (FacadePhone.getFacadePhone(emf).alreadyExists(phoneDTO.getNumber()))
@@ -157,14 +155,10 @@ public class FacadePerson {
             person.addPhone(new Phone(phoneDTO));
         }
 
-//        personDTO.getHobbyDTOList().forEach(hobbyDTO -> {           // Find the existing hobbies from database and pair them with person.
-//            person.addHobby(em.find(Hobby.class, hobbyDTO.getId()));
-//        });
-
         for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
             person.addHobby(FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyDTO.getId()));
         }
-
+        
         try {
             em.getTransaction().begin();
             em.merge(cityInfo);
