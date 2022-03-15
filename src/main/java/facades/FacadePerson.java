@@ -110,20 +110,21 @@ public class FacadePerson {
             person.addHobby(FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyDTO.getId()));
         }
 
-//        cityInfo.addAddress(address);                               // Add references for bi-directional relationships.
+        cityInfo.addAddress(address);                               // Add references for bi-directional relationships.
         address.addPerson(person);
 
         try {
             em.getTransaction().begin();
-//            em.merge(cityInfo);
-//            em.merge(address);        // TODO: Check if address already exists before creating new
-            em.persist(person);
-            person.getPhoneList().forEach(em::persist);
+            em.merge(cityInfo);
+            em.merge(address);        // TODO: Check if address already exists before creating new
+            Person personTest = em.merge(person);
+            System.out.println("PersonTest ID: "+ personTest.getId());
+            person.getPhoneList().forEach(em::merge);
             em.getTransaction().commit();
         } finally {
             em.close();
         }
-        return new PersonDTO(person);
+        return getByPhoneNumber(person.getPhoneList().get(0).getNumber());
     }
 
     // Update person

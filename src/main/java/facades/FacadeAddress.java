@@ -30,13 +30,11 @@ public class FacadeAddress {
         EntityManager em = emf.createEntityManager();
 
         CityInfo cityInfo = FacadeCityInfo.getFacadeCityInfo(emf).getCityInfoByZip(aDto.getCityInfoDTO().getZipCode());
-//        CityInfo cityInfo = new CityInfo(aDto.getCityInfoDTO());
+        System.out.println("CityInfo ID: "+ cityInfo.getId());
         cityInfo.addAddress(address);             // Add references for bi-directional relationships.
 
         try {
             em.getTransaction().begin();
-//            em.merge(address);
-            em.merge(cityInfo);
             em.merge(address);
             em.getTransaction().commit();
         } finally {
@@ -46,7 +44,7 @@ public class FacadeAddress {
         return new AddressDTO(address);
     }
 
-    public AddressDTO findOrCreate(AddressDTO aDTO) throws EntityNotFoundException {
+    public AddressDTO findOrCreate(AddressDTO aDTO) {
         EntityManager em = emf.createEntityManager();
 
         TypedQuery<Address> typedQueryAddress
@@ -62,8 +60,7 @@ public class FacadeAddress {
             return new AddressDTO(addressList.get(0));
         }
         else {
-            System.out.println("Address list is empty -> Persisting new Address");
-            return create(aDTO);
+            return aDTO;
         }
     }
 

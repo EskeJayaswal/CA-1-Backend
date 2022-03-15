@@ -3,8 +3,8 @@ POST http://localhost:8080/ca1_war_exploded/api/person/
 Content-Type: application/json
 
 {
-  "email": "MikkelRaev@mail.dk",
-  "firstName": "Mikkel",
+  "email": "BobbyRaev@mail.dk",
+  "firstName": "Bobby",
   "lastName": "Raev",
   "addressDTO": {
 
@@ -18,7 +18,7 @@ Content-Type: application/json
   },
   "phoneList": [
     {
-    "number": "456",
+    "number": "123",
     "description": "Home"
   }
   ],
@@ -31,7 +31,7 @@ Content-Type: application/json
 
 ###
 # Get info from person with ID
-GET http://localhost:8080/ca1_war_exploded/api/person/29
+GET http://localhost:8080/ca1_war_exploded/api/person/1
 Content-Type: application/json
 
 ###

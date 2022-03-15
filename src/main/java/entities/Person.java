@@ -32,7 +32,7 @@ public class Person {
             inverseJoinColumns = @JoinColumn(name = "hobby_id"))
     private List<Hobby> hobbyList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "person", orphanRemoval = true)
+    @OneToMany(mappedBy = "person", orphanRemoval = true, cascade = CascadeType.PERSIST)
     private List<Phone> phoneList = new ArrayList<>();
 
     @ManyToOne(cascade = CascadeType.PERSIST)
