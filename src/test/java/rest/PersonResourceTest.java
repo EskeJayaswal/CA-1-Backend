@@ -74,7 +74,7 @@ public class PersonResourceTest {
         truncateData();
         EMF_Creator.endREST_TestWithDB();
         httpServer.shutdownNow();
-        System.out.println("--- RESOURCE PERSON ASSURED TESTS COMPLETE ---");
+        System.out.println("--- RESOURCE PERSON ASSURED TESTS COMPLETE ---");       // bøh
     }
 
     @BeforeEach
