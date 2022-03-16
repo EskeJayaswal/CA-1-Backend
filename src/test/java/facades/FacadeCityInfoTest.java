@@ -125,23 +125,23 @@ class FacadeCityInfoTest {
         assertEquals("Amager", ciList.get(1).getCity());
     }
 
-    @Test
-    void testCityInfoPopulate() throws IOException, InterruptedException {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
-        } finally {
-            em.close();
-        }
-
-        System.out.println("FacadeCityInfoTest - Populating (This might take some time)");
-        List<CityInfoDTO> ciList = facadeCityInfo.populateCityInfo();
-
-        assertEquals(1089, ciList.size());
-        assertEquals(1, ciList.get(0).getId());
-        assertEquals("1050", ciList.get(0).getZipCode());
-        assertEquals("København K", ciList.get(0).getCity());
-    }
+//    @Test
+//    void testCityInfoPopulate() throws IOException, InterruptedException {
+//        EntityManager em = emf.createEntityManager();
+//        try {
+//            em.getTransaction().begin();
+//            em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
+//            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
+//        } finally {
+//            em.close();
+//        }
+//
+//        System.out.println("FacadeCityInfoTest - Populating (This might take some time)");
+//        List<CityInfoDTO> ciList = facadeCityInfo.populateCityInfo();
+//
+//        assertEquals(1089, ciList.size());
+//        assertEquals(1, ciList.get(0).getId());
+//        assertEquals("1050", ciList.get(0).getZipCode());
+//        assertEquals("København K", ciList.get(0).getCity());
+//    }
 }

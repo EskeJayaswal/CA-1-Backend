@@ -55,6 +55,7 @@ public class PersonResourceTest {
     public static void setUpClass() {
         EMF_Creator.startREST_TestWithDB();
         emf = EMF_Creator.createEntityManagerFactoryForTest();
+        truncateData();
 
         httpServer = startServer();
         // setup assured
@@ -69,15 +70,39 @@ public class PersonResourceTest {
 
     @AfterAll
     public static void closeTestServer() {
-
+        truncateData();
         EMF_Creator.endREST_TestWithDB();
         httpServer.shutdownNow();
     }
 
     @BeforeEach
     public void setUp() throws EntityAlreadyExistsException, EntityNotFoundException {
+        truncateData();
         //EntityManager em = emf.createEntityManager();
         p1 = new Person(createPerson());
+    }
+
+    private static void truncateData() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createNamedQuery("Phone.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE phone AUTO_INCREMENT = 1").executeUpdate();
+
+            em.createNamedQuery("Hobby.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE hobby AUTO_INCREMENT = 1").executeUpdate();
+
+            em.createNamedQuery("Person.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE person AUTO_INCREMENT = 1").executeUpdate();
+
+            em.createNamedQuery("Address.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE address AUTO_INCREMENT = 1").executeUpdate();
+
+            em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
+        } finally {
+            em.close();
+        }
     }
 
     @Test
