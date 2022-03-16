@@ -4,6 +4,7 @@ import dtos.AddressDTO;
 import dtos.CityInfoDTO;
 import entities.Address;
 import errorhandling.EntityNotFoundException;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,12 +35,13 @@ class FacadeAddressTest {
         try {
             em.getTransaction().begin();
             em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
             em.getTransaction().commit();
         } finally {
             em.close();
         }
 
-        System.out.println("FacadeAddressTest - Populating CityInfo");
+        System.out.println("FacadeAddressTest - Populating CityInfo (This might take some time)");
         facadeCityInfo.populateCityInfo();
         System.out.println("FacadeAddressTest - Completed populating CityInfo");
     }
@@ -50,9 +52,26 @@ class FacadeAddressTest {
         try {
             em.getTransaction().begin();
             em.createNamedQuery("Address.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE address AUTO_INCREMENT = 1").executeUpdate();
             em.persist(new Address("street1", "addInfo1"));
+            em.getTransaction().commit();
+            em.getTransaction().begin();
             em.persist(new Address("street2", "addInfo2"));
             em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
+
+    @AfterAll
+    public static void cleanup() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createNamedQuery("Address.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE address AUTO_INCREMENT = 1").executeUpdate();
+            em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
         } finally {
             em.close();
         }
@@ -67,13 +86,41 @@ class FacadeAddressTest {
     public void testCreateMethod() throws EntityNotFoundException {
         CityInfoDTO ciDTO = new CityInfoDTO("3460", "Birkerød");
         AddressDTO aDTO = new AddressDTO("Roadname", "North of South", ciDTO);
-        facadeAddress.create(aDTO);
-
-        AddressDTO newAddressDTO = facadeAddress.findOrCreate(aDTO);
+        AddressDTO persistedADTO = facadeAddress.create(aDTO);
 
         assertEquals(3, facadeAddress.getAddressCount());
-        assertEquals(3, newAddressDTO.getId());
-        assertEquals("Roadname", newAddressDTO.getStreet());
-        assertEquals("North of South", newAddressDTO.getAdditionalInfo());
+        assertEquals(3, persistedADTO.getId());
+        assertEquals("Roadname", persistedADTO.getStreet());
+        assertEquals("North of South", persistedADTO.getAdditionalInfo());
+    }
+
+    @Test
+    public void testFindOrCreateExistingAddress() throws EntityNotFoundException {
+        CityInfoDTO ciDTO = new CityInfoDTO("3400", "Hillerød");
+        AddressDTO aDTO = new AddressDTO("Testvej", "3 TV", ciDTO);
+        AddressDTO persistedADTO = facadeAddress.create(aDTO);
+
+        AddressDTO newADTO = new AddressDTO("Testvej", "3 TV", ciDTO);
+        AddressDTO foundADTO = facadeAddress.findOrCreate(newADTO);
+
+        assertEquals(3, facadeAddress.getAddressCount());
+        assertEquals(3, persistedADTO.getId());
+        assertEquals("Testvej", persistedADTO.getStreet());
+        assertEquals("3 TV", persistedADTO.getAdditionalInfo());
+        assertEquals("3400", persistedADTO.getCityInfoDTO().getZipCode());
+        assertEquals("Hillerød", persistedADTO.getCityInfoDTO().getCity());
+    }
+
+    @Test
+    public void testFindOrCreateNonExistingAddress() {
+        CityInfoDTO ciDTO = new CityInfoDTO("3450", "Allerød");
+        AddressDTO aDTO = new AddressDTO("Testvejen", "2 TV", ciDTO);
+        AddressDTO foundADTO = facadeAddress.findOrCreate(aDTO);
+
+        assertNull(foundADTO.getId());
+        assertEquals("Testvejen", foundADTO.getStreet());
+        assertEquals("2 TV", foundADTO.getAdditionalInfo());
+        assertEquals("3450", foundADTO.getCityInfoDTO().getZipCode());
+        assertEquals("Allerød", foundADTO.getCityInfoDTO().getCity());
     }
 }

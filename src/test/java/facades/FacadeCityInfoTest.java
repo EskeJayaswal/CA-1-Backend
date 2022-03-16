@@ -3,6 +3,7 @@ package facades;
 import dtos.CityInfoDTO;
 import entities.CityInfo;
 import errorhandling.EntityNotFoundException;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import utils.EMF_Creator;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ class FacadeCityInfoTest {
         try {
             em.getTransaction().begin();
             em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
             em.persist(new CityInfo("3460", "Birkerød"));
             em.getTransaction().commit();
             em.getTransaction().begin();
@@ -44,8 +47,20 @@ class FacadeCityInfoTest {
         }
     }
 
+    @AfterAll
+    public static void cleanup() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
+        } finally {
+            em.close();
+        }
+    }
+
     @Test
-    public void testCityInfoAmount() {
+    public void testCityInfoCount() {
         assertEquals(2, facadeCityInfo.getCityInfoCount());
     }
 
@@ -108,5 +123,25 @@ class FacadeCityInfoTest {
         assertEquals(2, ciList.get(1).getId());
         assertEquals("2300", ciList.get(1).getZipCode());
         assertEquals("Amager", ciList.get(1).getCity());
+    }
+
+    @Test
+    void testCityInfoPopulate() throws IOException, InterruptedException {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
+            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
+        } finally {
+            em.close();
+        }
+
+        System.out.println("FacadeCityInfoTest - Populating (This might take some time)");
+        List<CityInfoDTO> ciList = facadeCityInfo.populateCityInfo();
+
+        assertEquals(1089, ciList.size());
+        assertEquals(1, ciList.get(0).getId());
+        assertEquals("1050", ciList.get(0).getZipCode());
+        assertEquals("København K", ciList.get(0).getCity());
     }
 }

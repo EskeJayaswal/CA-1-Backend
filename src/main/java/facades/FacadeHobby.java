@@ -44,18 +44,18 @@ public class FacadeHobby {
 
     public List<HobbyDTO> create(List<HobbyDTO> hobbyDTOList) {
         List<HobbyDTO> hobbyList = new ArrayList<>();
-        EntityManager em = emf.createEntityManager();
 
-        try {
-            em.getTransaction().begin();
-            for (HobbyDTO h : hobbyDTOList) {
+        for (HobbyDTO h : hobbyDTOList) {
+            EntityManager em = emf.createEntityManager();
+            try {
+                em.getTransaction().begin();
                 Hobby hobby = new Hobby(h);
                 em.persist(hobby);
+                em.getTransaction().commit();
                 hobbyList.add(new HobbyDTO(hobby));
+            } finally {
+                em.close();
             }
-            em.getTransaction().commit();
-        } finally {
-            em.close();
         }
         return hobbyList;
     }
