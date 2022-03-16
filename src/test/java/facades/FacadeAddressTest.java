@@ -4,10 +4,7 @@ import dtos.AddressDTO;
 import dtos.CityInfoDTO;
 import entities.Address;
 import errorhandling.EntityNotFoundException;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import utils.EMF_Creator;
 
 import javax.persistence.EntityManager;
@@ -17,6 +14,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 class FacadeAddressTest {
     private static EntityManagerFactory emf;
     private static FacadeAddress facadeAddress;
