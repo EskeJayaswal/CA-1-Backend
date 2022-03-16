@@ -18,7 +18,7 @@ Content-Type: application/json
   },
   "phoneList": [
     {
-    "number": "123",
+    "number": "1223",
     "description": "Home"
   }
   ],
@@ -68,7 +68,7 @@ Content-Type: application/json
 
 ###
 # Update person with ID
-PUT http://localhost:8080/ca1_war_exploded/api/person/1
+PUT http://localhost:8080/ca1_war_exploded/api/person/5
 Content-Type: application/json
 
 {
@@ -87,7 +87,7 @@ Content-Type: application/json
   },
   "phoneList": [
     {
-      "number": "123",
+      "number": "2333",
       "description": "Home"
     }
   ],
@@ -103,12 +103,12 @@ Content-Type: application/json
 
 ###
 # Get person with phone number
-GET http://localhost:8080/ca1_war_exploded/api/person/phone/36164523
+GET http://localhost:8080/ca1_war_exploded/api/person/phone/123
 Content-Type: application/json
 
 ###
 # Get persons with given hobby
-GET http://localhost:8080/ca1_war_exploded/api/person/hobby/1
+GET http://localhost:8080/ca1_war_exploded/api/person/hobby/40
 Content-Type: application/json
 
 ###
