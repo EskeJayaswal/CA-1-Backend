@@ -147,6 +147,10 @@ public class PersonResourceTest {
 
     @Test
     public void testFailPersonByHobby() {
+        System.out.println("===============================================================");
+        System.out.println("OBS: Test failing on purpose, when finding hobby by invalid ID: ");
+        System.out.println("===============================================================");
+
         given()
                 .contentType("application/json")
                 .get("/person/hobby/2")

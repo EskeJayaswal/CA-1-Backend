@@ -14,7 +14,6 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 class FacadeAddressTest {
     private static EntityManagerFactory emf;
     private static FacadeAddress facadeAddress;
