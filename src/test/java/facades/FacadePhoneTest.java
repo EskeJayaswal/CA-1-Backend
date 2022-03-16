@@ -23,6 +23,7 @@ class FacadePhoneTest {
 
     @BeforeAll
     public static void setUpClass() {
+        System.out.println("--- FACADE PHONE TESTS STARTING ---");
         emf = EMF_Creator.createEntityManagerFactoryForTest();
         facadePhone = FacadePhone.getFacadePhone(emf);
         facadeHobby = FacadeHobby.getFacadeHobby(emf);
@@ -46,6 +47,7 @@ class FacadePhoneTest {
     @AfterAll
     public static void cleanup() {
         truncateData();
+        System.out.println("--- FACADE PHONE TESTS COMPLETE ---");
     }
 
     private static void truncateData() {

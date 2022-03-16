@@ -53,6 +53,7 @@ public class PersonResourceTest {
 
     @BeforeAll
     public static void setUpClass() {
+        System.out.println("--- RESOURCE PERSON ASSURED TESTS STARTING ---");
         EMF_Creator.startREST_TestWithDB();
         emf = EMF_Creator.createEntityManagerFactoryForTest();
         truncateData();
@@ -73,6 +74,7 @@ public class PersonResourceTest {
         truncateData();
         EMF_Creator.endREST_TestWithDB();
         httpServer.shutdownNow();
+        System.out.println("--- RESOURCE PERSON ASSURED TESTS COMPLETE ---");
     }
 
     @BeforeEach

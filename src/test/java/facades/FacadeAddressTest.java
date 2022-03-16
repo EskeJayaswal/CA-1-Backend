@@ -26,6 +26,7 @@ class FacadeAddressTest {
 
     @BeforeAll
     public static void setUpClass() {
+        System.out.println("--- FACADE ADDRESS TESTS STARTING ---");
         emf = EMF_Creator.createEntityManagerFactoryForTest();
         facadeAddress = FacadeAddress.getFacadeAddress(emf);
         facadeCityInfo = FacadeCityInfo.getFacadeCityInfo(emf);
@@ -71,6 +72,7 @@ class FacadeAddressTest {
         } finally {
             em.close();
         }
+        System.out.println("--- FACADE ADDRESS TESTS COMPLETE ---");
     }
 
     @Test

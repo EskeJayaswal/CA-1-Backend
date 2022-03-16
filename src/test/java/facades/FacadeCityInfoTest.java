@@ -26,6 +26,7 @@ class FacadeCityInfoTest {
 
     @BeforeAll
     public static void setUpClass() {
+        System.out.println("--- FACADE CITY INFO TESTS STARTING ---");
         emf = EMF_Creator.createEntityManagerFactoryForTest();
         facadeCityInfo = FacadeCityInfo.getFacadeCityInfo(emf);
     }
@@ -57,6 +58,7 @@ class FacadeCityInfoTest {
         } finally {
             em.close();
         }
+        System.out.println("--- FACADE CITY INFO TESTS COMPLETE ---");
     }
 
     @Test
