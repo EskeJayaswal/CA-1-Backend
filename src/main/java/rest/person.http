@@ -72,13 +72,13 @@ PUT http://localhost:8080/ca1_war_exploded/api/person/1
 Content-Type: application/json
 
 {
-  "email": "BobbyRaev@mail.dk",
-  "firstName": "Bobby",
-  "lastName": "Raev",
+  "email": "LL@mail.dk",
+  "firstName": "Lasse",
+  "lastName": "Larsen",
   "addressDTO": {
 
-    "street": "Hillerødvej",
-    "additionalInfo": "57",
+    "street": "Sallingvej",
+    "additionalInfo": "157",
     "cityInfoDTO": {
 
       "zipCode": "3460",
