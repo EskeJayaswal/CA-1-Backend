@@ -25,7 +25,7 @@ class FacadeAddressTest {
     public FacadeAddressTest() {}
 
     @BeforeAll
-    public static void setUpClass() throws IOException, InterruptedException {
+    public static void setUpClass() {
         emf = EMF_Creator.createEntityManagerFactoryForTest();
         facadeAddress = FacadeAddress.getFacadeAddress(emf);
         facadeCityInfo = FacadeCityInfo.getFacadeCityInfo(emf);
@@ -40,10 +40,6 @@ class FacadeAddressTest {
         } finally {
             em.close();
         }
-
-        System.out.println("FacadeAddressTest - Populating CityInfo (This might take some time)");
-        facadeCityInfo.populateCityInfo();
-        System.out.println("FacadeAddressTest - Completed populating CityInfo");
     }
 
     @BeforeEach
@@ -85,6 +81,8 @@ class FacadeAddressTest {
     @Test
     public void testCreateMethod() throws EntityNotFoundException {
         CityInfoDTO ciDTO = new CityInfoDTO("3460", "Birkerød");
+        facadeCityInfo.create(ciDTO);
+
         AddressDTO aDTO = new AddressDTO("Roadname", "North of South", ciDTO);
         AddressDTO persistedADTO = facadeAddress.create(aDTO);
 
@@ -97,18 +95,20 @@ class FacadeAddressTest {
     @Test
     public void testFindOrCreateExistingAddress() throws EntityNotFoundException {
         CityInfoDTO ciDTO = new CityInfoDTO("3400", "Hillerød");
+        facadeCityInfo.create(ciDTO);
+
         AddressDTO aDTO = new AddressDTO("Testvej", "3 TV", ciDTO);
-        AddressDTO persistedADTO = facadeAddress.create(aDTO);
+        facadeAddress.create(aDTO);
 
         AddressDTO newADTO = new AddressDTO("Testvej", "3 TV", ciDTO);
         AddressDTO foundADTO = facadeAddress.findOrCreate(newADTO);
 
         assertEquals(3, facadeAddress.getAddressCount());
-        assertEquals(3, persistedADTO.getId());
-        assertEquals("Testvej", persistedADTO.getStreet());
-        assertEquals("3 TV", persistedADTO.getAdditionalInfo());
-        assertEquals("3400", persistedADTO.getCityInfoDTO().getZipCode());
-        assertEquals("Hillerød", persistedADTO.getCityInfoDTO().getCity());
+        assertEquals(3, foundADTO.getId());
+        assertEquals("Testvej", foundADTO.getStreet());
+        assertEquals("3 TV", foundADTO.getAdditionalInfo());
+        assertEquals("3400", foundADTO.getCityInfoDTO().getZipCode());
+        assertEquals("Hillerød", foundADTO.getCityInfoDTO().getCity());
     }
 
     @Test

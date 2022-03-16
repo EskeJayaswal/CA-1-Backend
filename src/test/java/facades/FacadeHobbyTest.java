@@ -35,24 +35,10 @@ class FacadeHobbyTest {
 
     @BeforeEach
     public void setup() {
+        truncateData();
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            em.createNamedQuery("Phone.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE phone AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("Hobby.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE hobby AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("Person.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE person AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("Address.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE address AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
-
             em.persist(new Hobby("Cykling", "Man cykler rundt"));
             em.getTransaction().commit();
 
@@ -70,6 +56,10 @@ class FacadeHobbyTest {
 
     @AfterAll
     public static void cleanup() {
+        truncateData();
+    }
+
+    private static void truncateData() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -192,36 +182,4 @@ class FacadeHobbyTest {
         assertEquals("Painting", hList.get(1).getName());
         assertEquals("Being creative on a canvas", hList.get(1).getDescription());
     }
-
-//em.persist(new Hobby("Cykling", "Man cykler rundt"));
-//em.getTransaction().commit();
-//
-//em.getTransaction().begin();
-//em.persist(new Hobby("Klatring", "Det er sjovt"));
-//em.getTransaction().commit();
-
-
-//    @Test
-//    public void tesCreateMethod() {
-//        CityInfoDTO ciDTO = new CityInfoDTO("2400", "KBHNV");
-//        AddressDTO aDTO = new AddressDTO("Ravnevej", "Her bor Preben", ciDTO);
-//        PersonDTO pDTO = new PersonDTO("preben@123.dk", "Preben", "Stenstrøm", aDTO);
-//        FacadePerson facadePerson = FacadePerson.getFacadePerson(emf);
-//        PersonDTO newDTO =  facadePerson.create(pDTO);
-//        facadePerson.addHobby(newDTO.getId(), 1);
-//    }
-//
-//    @Test
-//    public void testAddAllHobbies() {
-//        CityInfoDTO ciDTO = new CityInfoDTO("2450", "Vejle");
-//        AddressDTO aDTO = new AddressDTO("vejlevej", "Her bor Jan", ciDTO);
-//        PersonDTO pDTO = new PersonDTO("jan@123.dk", "jan", "Langballe", aDTO);
-//        FacadePerson facadePerson = FacadePerson.getFacadePerson(emf);
-//        PersonDTO newDTO =  facadePerson.create(pDTO);
-//        newDTO.addHobbyDTO(facade.getHobbyByID(1));
-//        newDTO.addHobbyDTO(facade.getHobbyByID(2));
-//        newDTO.addHobbyDTO(facade.getHobbyByID(3));
-//        facadePerson.addAllHobbies(newDTO);
-//    }
-
 }
