@@ -34,7 +34,7 @@
         <td>-</td>
         <td><a href="#p1">person(1)</a></td>
         <td><a href="#e1">e(1)</a></td>
-        <td>e(1)</td>
+
     </tr>
     <tr>
         <td>GET</td>
@@ -69,7 +69,7 @@
         <td>api/person/{id}</td>
         <td><a href="#p1">person(1)</a></td>
         <td><a href="#p1">person(1)</a></td>
-        <td><a href="#e1">e(1)</a><a href="#e3">e(3)</a></td>
+        <td><a href="#e1">e(1)</a>  <a href="#e3">e(3)</a></td>
     </tr>
     <tr>
         <td>GET</td>
@@ -252,25 +252,31 @@
     <h1>Error</h1>
     <h2>(e) All errors are reported using this format (with the HTTP-status code matching the number)</h2>
 
-    <h3 id="e1">e(1)</h3>
+    <h3 id="e1">error(1)</h3>
     <pre>
         (e1) :{"code": 404, "message": "The Person entity with ID: '5' was not found"}
     </pre>
 
-    <h3 id="e2">e(2)</h3>
+    <h3 id="e2">error(2)</h3>
     <pre>
-        (e1) :{"code": 404, "message": "The Person entity with ID: '5' was not found"}
+        (e2) :{ status : 404, "message": "Zipcode: \u00270001\u0027 was not found" }
     </pre>
 
-    <h3 id="e3">e(3)</h3>
+    <h3 id="e3">error(3)</h3>
     <pre>
-        (e1) :{"code": 404, "message": "The Person entity with ID: '5' was not found"}
+        (e3) :{ status : 404,   "message": "Phone number: 123 already exists in the database" }
     </pre>
 
-    <h3 id="e4">e(4)</h3>
+    <h3 id="e4">error(4)</h3>
     <pre>
-        (e1) :{"code": 404, "message": "The Person entity with ID: '5' was not found"}
+        (e4) :{ status : 404,   "No CityInfo entities exist. Call '.../api/cityinfo/populate' to populate the database with valid CityInfo data" }
     </pre>
+
+    <h3 id="e5">error(5)</h3>
+    <pre>
+        (e5) :{ status : 404,   "No Hobby entities exist. Call '.../api/hobby/populate' to populate the database with valid Hobby data" }
+    </pre>
+
 
 </div>
 
