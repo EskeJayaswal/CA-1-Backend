@@ -3,13 +3,9 @@ package rest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dtos.*;
-import entities.Person;
-import entities.RenameMe;
+import entities.*;
 import errorhandling.EntityAlreadyExistsException;
 import errorhandling.EntityNotFoundException;
-import facades.FacadeCityInfo;
-import facades.FacadeHobby;
-import facades.FacadePerson;
 import io.restassured.http.ContentType;
 import utils.EMF_Creator;
 import io.restassured.RestAssured;
@@ -29,21 +25,22 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled
 public class PersonResourceTest {
 
     private static final int SERVER_PORT = 7777;
     private static final String SERVER_URL = "http://localhost/api";
     private static Person p1, p2;
+    private static Phone ph1, ph2;
+    private static Address a1;
+    private static CityInfo c1;
+    private static Hobby h1;
+
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static EntityManagerFactory emf;
-    private static FacadeHobby facadeHobby;
-    private static FacadePerson facadePerson;
-    private static FacadeCityInfo facadeCityInfo;
+
 
     static final URI BASE_URI = UriBuilder.fromUri(SERVER_URL).port(SERVER_PORT).build();
     private static HttpServer httpServer;
@@ -58,22 +55,16 @@ public class PersonResourceTest {
         System.out.println("--- RESOURCE PERSON ASSURED TESTS STARTING ---");
         EMF_Creator.startREST_TestWithDB();
         emf = EMF_Creator.createEntityManagerFactoryForTest();
-        truncateData();
 
         httpServer = startServer();
         // setup assured
         RestAssured.baseURI = SERVER_URL;
         RestAssured.port = SERVER_PORT;
         RestAssured.defaultParser = Parser.JSON;
-
-        facadeHobby = FacadeHobby.getFacadeHobby(emf);
-        facadePerson = FacadePerson.getFacadePerson(emf);
-        facadeCityInfo = FacadeCityInfo.getFacadeCityInfo(emf);
     }
 
     @AfterAll
     public static void closeTestServer() {
-        truncateData();
         EMF_Creator.endREST_TestWithDB();
         httpServer.shutdownNow();
         System.out.println("--- RESOURCE PERSON ASSURED TESTS COMPLETE ---");       // bøh
@@ -81,29 +72,32 @@ public class PersonResourceTest {
 
     @BeforeEach
     public void setUp() throws EntityAlreadyExistsException, EntityNotFoundException {
-        truncateData();
-        //EntityManager em = emf.createEntityManager();
-        p1 = new Person(createPerson());
-    }
-
-    private static void truncateData() {
         EntityManager em = emf.createEntityManager();
+
+        ph1 = new Phone("12345678", "Work");
+        p1 = new Person("AA@mail.dk", "Anders", "And");
+        a1 = new Address("Adelsvej", "1");
+        c1 = new CityInfo("2000", "Frederiksberg");
+        h1 = new Hobby("Football", "NFL");
+
+        c1.addAddress(a1);
+        a1.addPerson(p1);
+        p1.addPhone(ph1);
+        p1.addHobby(h1);
+
         try {
             em.getTransaction().begin();
             em.createNamedQuery("Phone.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE phone AUTO_INCREMENT = 1").executeUpdate();
-
             em.createNamedQuery("Hobby.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE hobby AUTO_INCREMENT = 1").executeUpdate();
-
             em.createNamedQuery("Person.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE person AUTO_INCREMENT = 1").executeUpdate();
-
             em.createNamedQuery("Address.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE address AUTO_INCREMENT = 1").executeUpdate();
-
             em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
+            em.persist(h1);
+            em.persist(c1);
+            em.persist(a1);
+            em.persist(p1);
+            em.persist(ph1);
+            em.getTransaction().commit();
         } finally {
             em.close();
         }
@@ -134,21 +128,21 @@ public class PersonResourceTest {
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("firstName", equalTo("allan"))
-                .body("lastName", equalTo("boje"))
-                .body("phoneList", hasItem(hasEntry("number", "616881")));
+                .body("firstName", equalTo("Anders"))
+                .body("lastName", equalTo("And"))
+                .body("phoneList", hasItem(hasEntry("number", "12345678")));
     }
 
     @Test
     public void testGetpersonByPhone() {
         given()
                 .contentType("application/json")
-                .get("/person/phone/616881")
+                .get("/person/phone/12345678")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("firstName", equalTo("allan"))
-                .body("hobbyDTOList", hasItem(hasEntry("name", "Sport")));
+                .body("firstName", equalTo("Anders"))
+                .body("hobbyDTOList", hasItem(hasEntry("name", "Football")));
     }
 
     @Test
@@ -166,30 +160,27 @@ public class PersonResourceTest {
     public void testPersonByZipcode() {
         given()
                 .contentType("application/json")
-                .get("/person/zipcode/3460")
+                .get("/person/zipcode/2000")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.OK_200.getStatusCode())
-                .body("", hasItem(hasEntry("firstName", "allan")));
+                .body("", hasItem(hasEntry("firstName", "Anders")));
     }
 
-   /* @Test
+   @Test
     public void testPostPerson() {
-        CityInfoDTO ciDTO = new CityInfoDTO("3460", "Birkerød");
-        //facadeCityInfo.create(ciDTO);
+       ph2 = new Phone("87654321", "Work");
+       p2 = new Person("BB@mail.dk", "Bo", "Baker");
 
-        AddressDTO aDTO = new AddressDTO("Vejnavn", "2 tv", ciDTO);
-        PersonDTO pDTO = new PersonDTO("valby@Mail", "Bjek", "Hansen", aDTO);
 
-        PhoneDTO phoneDTO = new PhoneDTO("55555", "Home");
+       a1.addPerson(p2);
+       p2.addPhone(ph2);
+       p2.addHobby(h1);
 
-        HobbyDTO hDTO = new HobbyDTO("Sport", "Spark til en bold");
-//        HobbyDTO persistedHDTO = facadeHobby.create(hDTO);
+        String requestBody = GSON.toJson(new PersonDTO(p2));
 
-  //      pDTO.addPhoneDTO(phoneDTO);
- //       pDTO.addHobbyDTO(persistedHDTO);
+       System.out.println(requestBody);
 
-        String requestBody = GSON.toJson(pDTO);
         given()
                 .header("Content-type", ContentType.JSON)
                 .and()
@@ -198,25 +189,7 @@ public class PersonResourceTest {
                 .post("/person")
                 .then()
                 .assertThat()
-                .statusCode(HttpStatus.OK_200.getStatusCode());
-    }*/
-
-    public PersonDTO createPerson() throws EntityAlreadyExistsException, EntityNotFoundException {
-        CityInfoDTO ciDTO = new CityInfoDTO("3460", "Birkerød");
-        facadeCityInfo.create(ciDTO);
-
-        AddressDTO aDTO = new AddressDTO("Vejnavn", "2 tv", ciDTO);
-        PersonDTO pDTO = new PersonDTO("email", "allan", "boje", aDTO);
-
-        PhoneDTO phoneDTO = new PhoneDTO("616881", "Home");
-
-        HobbyDTO hDTO = new HobbyDTO("Sport", "Spark til en bold");
-        HobbyDTO persistedHDTO = facadeHobby.create(hDTO);
-
-        pDTO.addPhoneDTO(phoneDTO);
-        pDTO.addHobbyDTO(persistedHDTO);
-
-        return facadePerson.create(pDTO);
-
+                .statusCode(HttpStatus.OK_200.getStatusCode())
+                .body("firstName", equalTo("Bo"));
     }
 }
