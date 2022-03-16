@@ -45,19 +45,37 @@ public class FacadeCityInfo {
         return new CityInfoDTO(ci);
     }
 
+//    public List<CityInfoDTO> create(List<CityInfoDTO> ciDTOs) {
+//        List<CityInfoDTO> cityInfoDTOList = new ArrayList<>();
+//        EntityManager em = emf.createEntityManager();
+//        try {
+//            em.getTransaction().begin();
+//            for (CityInfoDTO ciDTO : ciDTOs) {
+//                CityInfo cityInfo = new CityInfo(ciDTO);
+//                em.persist(cityInfo);
+//                cityInfoDTOList.add(new CityInfoDTO(cityInfo));
+//            }
+//            em.getTransaction().commit();
+//        } finally {
+//            em.close();
+//        }
+//        return cityInfoDTOList;
+//    }
+
     public List<CityInfoDTO> create(List<CityInfoDTO> ciDTOs) {
         List<CityInfoDTO> cityInfoDTOList = new ArrayList<>();
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            for (CityInfoDTO ciDTO : ciDTOs) {
+
+        for (CityInfoDTO ciDTO : ciDTOs) {
+            EntityManager em = emf.createEntityManager();
+            try {
+                em.getTransaction().begin();
                 CityInfo cityInfo = new CityInfo(ciDTO);
                 em.persist(cityInfo);
+                em.getTransaction().commit();
                 cityInfoDTOList.add(new CityInfoDTO(cityInfo));
+            } finally {
+                em.close();
             }
-            em.getTransaction().commit();
-        } finally {
-            em.close();
         }
         return cityInfoDTOList;
     }

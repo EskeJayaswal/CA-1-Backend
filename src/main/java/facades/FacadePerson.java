@@ -158,7 +158,7 @@ public class FacadePerson {
         for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
             person.addHobby(FacadeHobby.getFacadeHobby(emf).getHobbyByID(hobbyDTO.getId()));
         }
-        
+
         try {
             em.getTransaction().begin();
             em.merge(cityInfo);
