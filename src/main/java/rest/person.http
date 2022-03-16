@@ -138,3 +138,14 @@ Content-Type: application/json
 
 #PUT http://localhost:8080/ca1_war_exploded/api/person/removehobbies/20
 #Content-Type: application/json
+
+
+###
+# add new hobby to database
+POST http://localhost:8080/ca1_war_exploded/api/hobby
+Content-Type: application/json
+
+{
+  "name": "Coin Collector",
+  "description": "Give me all your gold."
+}

@@ -1,10 +1,278 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Start Page</title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-    <body>
-        <h1>Change or remove this page</h1>
-    </body>
+<head>
+    <title>Start Page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>API documentation</h1>
+
+
+<table>
+    <thead>
+    <tr>
+        <th>Method</th>
+        <th>URL</th>
+        <th>Request Body</th>
+        <th>Response</th>
+        <th>Error(e)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>GET</td>
+        <td>api/person/count</td>
+        <td>-</td>
+        <td>{"count": 12}</td>
+        <td></td>
+
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td>api/person/{id}</td>
+        <td>-</td>
+        <td><a href="#p1">person(1)</a></td>
+        <td><a href="#e1">e(1)</a></td>
+        <td>e(1)</td>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td>api/person/phone/{id}</td>
+        <td>-</td>
+        <td><a href="#p1">person(1)</a></td>
+        <td><a href="#e1">e(1)</a></td>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td>api/person/hobby/{id}</td>
+        <td>-</td>
+        <td><a href="#p2">person(2)</a></td>
+        <td><a href="#e1">e(1)</a></td>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td>api/person/zipcode/{zipCode}</td>
+        <td>-</td>
+        <td><a href="#p2">person(2)</a></td>
+        <td><a href="#e2">e(2)</a></td>
+    </tr>
+    <tr>
+        <td>POST</td>
+        <td>api/person</td>
+        <td><a href="#p1">person(1) without id</a></td>
+        <td><a href="#p1">person(1)</a></td>
+        <td><a href="#e3">e(3)</a></td>
+    </tr>
+    <tr>
+        <td>PUT</td>
+        <td>api/person/{id}</td>
+        <td><a href="#p1">person(1)</a></td>
+        <td><a href="#p1">person(1)</a></td>
+        <td><a href="#e1">e(1)</a><a href="#e3">e(3)</a></td>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td>api/cityinfo</td>
+        <td>-</td>
+        <td><a href="#c1">cityinfo(1)</a></td>
+        <a href="#e4">e(4)</a>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td>api/cityinfo/count</td>
+        <td>-</td>
+        <td>{"count": 1089}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td>api/hobby/count</td>
+        <td>-</td>
+        <td>{"count": 5}</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td>api/hobby</td>
+        <td>-</td>
+        <td><a href="#h1">hobby(1)</a></td>
+        <a href="#e1">e(5)</a>
+    </tr>
+    <tr>
+        <td>POST</td>
+        <td>api/hobby</td>
+        <td><a href="#h2">hobby(2) without Id</a></td>
+        <td><a href="#h2">hobby(2)</a></td>
+        <td></td>
+    </tr>
+
+
+    </tbody>
+
+</table>
+
+<div>
+
+    <h1>Request Body and Response Formats</h1>
+
+    <h3 id="p1">person(1)</h3>
+    <p>
+    <pre>
+        {
+            "id": 3,
+            "email": "BobbyRaev@mail.dk",
+            "firstName": "Bobby",
+            "lastName": "Raev",
+            "addressDTO":{
+                "id": 1,
+                "street": "Skovej",
+                "additionalInfo": "54",
+                "cityInfoDTO":{
+                    "id": 495,
+                    "zipCode": "2500",
+                    "city": "Valby"
+                    }
+                },
+            "phoneList": [
+                {
+                    "id": 3,
+                    "number": "1223",
+                    "description": "Home"
+                }
+            ],
+            "hobbyDTOList": [
+                {
+                    "id": 1,
+                    "name": "Painting",
+                    "description": "Being creative on a canvas"
+                }
+            ]
+        }
+    </pre>
+    </p>
+
+
+    <h3 id="p2">person(2)</h3>
+    <p>
+    <pre>
+        [
+          {
+            "id": 1,
+            "email": "BobbyRaev@mail.dk",
+            "firstName": "Bobby",
+            "lastName": "Raev",
+            "addressDTO": {
+              "id": 1,
+              "street": "Skovej",
+              "additionalInfo": "54",
+              "cityInfoDTO": {
+                "id": 495,
+                "zipCode": "2500",
+                "city": "Valby"
+              }
+            },
+            "phoneList": [
+              {
+                "id": 1,
+                "number": "123",
+                "description": "Home"
+              }
+            ],
+            "hobbyDTOList": [
+              {
+                "id": 1,
+                "name": "Painting",
+                "description": "Being creative on a canvas"
+              }
+            ]
+          },
+          {
+            "id": 2, ….
+        …
+    ]
+
+    </pre>
+    </p>
+
+
+
+    <h3 id="c1">cityinfo(1)</h3>
+    <p>
+    <pre>
+        [
+          {
+            "id": 1,
+            "zipCode": "1911",
+            "city": "Frederiksberg C"
+          },
+          {
+            "id": 2,
+            "zipCode": "7173",
+            "city": "Vonge"
+          },
+          {
+            "id": 3,
+            .....
+        ]
+    </pre>
+    </p>
+
+    <h3 id="h1">hobby(1)</h3>
+    <p>
+    <pre>
+        [
+           {
+            "id": 1,
+            "name": "Sport",
+            "description": "Being physically active"
+          },
+          {
+            "id": 2,
+            ....
+           }
+        ]
+
+    </pre>
+    </p>
+
+
+    <h3 id="h2">hobby(2)</h3>
+    <p>
+    <pre>
+        {
+            "id": 6,
+            "name": "Coin Collector",
+            "description": "Give me all your gold."
+        }
+    </pre>
+    </p>
+
+
+    <h1>Error</h1>
+    <h2>(e) All errors are reported using this format (with the HTTP-status code matching the number)</h2>
+
+    <h3 id="e1">e(1)</h3>
+    <pre>
+        (e1) :{"code": 404, "message": "The Person entity with ID: '5' was not found"}
+    </pre>
+
+    <h3 id="e2">e(2)</h3>
+    <pre>
+        (e1) :{"code": 404, "message": "The Person entity with ID: '5' was not found"}
+    </pre>
+
+    <h3 id="e3">e(3)</h3>
+    <pre>
+        (e1) :{"code": 404, "message": "The Person entity with ID: '5' was not found"}
+    </pre>
+
+    <h3 id="e4">e(4)</h3>
+    <pre>
+        (e1) :{"code": 404, "message": "The Person entity with ID: '5' was not found"}
+    </pre>
+
+</div>
+
+</body>
 </html>
