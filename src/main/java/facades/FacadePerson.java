@@ -21,8 +21,8 @@ public class FacadePerson {
     // Copy of other facades
     private static FacadeCityInfo facadeCityInfo;
     private static FacadeAddress facadeAddress;
-    private static  FacadeHobby facadeHobby;
-    private static  FacadePhone facadePhone;
+    private static FacadeHobby facadeHobby;
+    private static FacadePhone facadePhone;
 
     public FacadePerson() {
     }
@@ -101,14 +101,11 @@ public class FacadePerson {
     public PersonDTO create(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
         EntityManager em = emf.createEntityManager();
 
-
-        CityInfo cityInfo = facadeCityInfo.getCityInfoByZip(
-                personDTO.getAddressDTO().getCityInfoDTO().getZipCode()
-        );
+        CityInfo cityInfo = facadeCityInfo.getCityInfoByZip(personDTO.getAddressDTO().getCityInfoDTO().getZipCode());
         Address address = new Address(facadeAddress.findOrCreate(personDTO.getAddressDTO()));
         Person person = new Person(personDTO);
-
         updatePhone(personDTO, person);
+        updateHobby(personDTO, person);
 
         cityInfo.addAddress(address);                               // Add references for bi-directional relationships.
         address.addPerson(person);
@@ -131,24 +128,22 @@ public class FacadePerson {
     public PersonDTO update(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
         EntityManager em = emf.createEntityManager();
 
-
         Person person = em.find(Person.class, personDTO.getId());                       // Read Person entity from DB
         Address address = person.getAddress();
-
         CityInfo cityInfo = facadeCityInfo.getCityInfoByZip(personDTO.getAddressDTO().getCityInfoDTO().getZipCode());
 
         person.setEmail(personDTO.getEmail());                                          // Update Person entity
         person.setFirstName(personDTO.getFirstName());
-        person.setFirstName(personDTO.getLastName());
+        person.setLastName(personDTO.getLastName());
 
         if (!sameAddress(personDTO, address)) {
-            System.out.println("im here");
             address = new Address(facadeAddress.findOrCreate(personDTO.getAddressDTO()));
             cityInfo.addAddress(address);
             address.addPerson(person);
         }
 
         updatePhone(personDTO, person);
+        updateHobby(personDTO, person);
 
         try {
             em.getTransaction().begin();
@@ -164,19 +159,20 @@ public class FacadePerson {
         return new PersonDTO(person);
     }
 
-    private void updatePhone(PersonDTO personDTO, Person person) throws EntityAlreadyExistsException, EntityNotFoundException {
+    private void updatePhone(PersonDTO personDTO, Person person) throws EntityAlreadyExistsException {
         for (PhoneDTO phoneDTO : personDTO.getPhoneList()) {                            // Check for updates on every phone number
             if (facadePhone.alreadyExists(phoneDTO.getNumber()))
                 throw new EntityAlreadyExistsException("Phone number: " + phoneDTO.getNumber() + " already exists in the database");
 
             person.addPhone(new Phone(phoneDTO));
         }
+    }
 
+    private void updateHobby(PersonDTO personDTO, Person person) throws EntityNotFoundException {
         for (HobbyDTO hobbyDTO : personDTO.getHobbyDTOList()) {
             person.addHobby(facadeHobby.getHobbyByID(hobbyDTO.getId()));
         }
     }
-
 
     // Being used before updating a persons infos
     public void removeAllPhones(PersonDTO personDTO) throws EntityNotFoundException, EntityAlreadyExistsException {
@@ -227,6 +223,7 @@ public class FacadePerson {
         }
     }
 
+    // TODO: Find a way to check for changed - STREET, ADDITIONALINFO, ZIPCODE, CITY
     private boolean sameAddress(PersonDTO personDTO, Address address) {
         return (personDTO.getAddressDTO().getStreet().equals(address.getStreet())
                 || personDTO.getAddressDTO().getCityInfoDTO().getZipCode().equals(address.getCityInfo().getZipCode()));

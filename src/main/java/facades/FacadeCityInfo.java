@@ -28,24 +28,22 @@ public class FacadeCityInfo {
         if (instance == null) {
             emf = _emf;
             instance = new FacadeCityInfo();
-            System.out.println("Testing: If im making a new City Info Facade everytime i call it!");
-
         }
         return instance;
     }
 
-//    public CityInfoDTO create(CityInfoDTO ciDTO) {
-//        CityInfo ci = new CityInfo(ciDTO);
-//        EntityManager em = emf.createEntityManager();
-//        try {
-//            em.getTransaction().begin();
-//            em.persist(ci);
-//            em.getTransaction().commit();
-//        } finally {
-//            em.close();
-//        }
-//        return new CityInfoDTO(ci);
-//    }
+    public CityInfoDTO create(CityInfoDTO ciDTO) {
+        CityInfo ci = new CityInfo(ciDTO);
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(ci);
+            em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+        return new CityInfoDTO(ci);
+    }
 
     public List<CityInfoDTO> create(List<CityInfoDTO> ciDTOs) {
         List<CityInfoDTO> cityInfoDTOList = new ArrayList<>();
@@ -109,11 +107,9 @@ public class FacadeCityInfo {
         return cityInfoList.get(0);
     }
 
-
     public CityInfoDTO getCityInfoDTOByZip(String zipCode) throws EntityNotFoundException {
         return new CityInfoDTO(getCityInfoByZip(zipCode));
     }
-
 
     public List<CityInfoDTO> getAllCityInfo() throws EntityNotFoundException {
         EntityManager em = emf.createEntityManager();
