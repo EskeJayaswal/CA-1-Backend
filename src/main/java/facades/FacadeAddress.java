@@ -34,7 +34,7 @@ public class FacadeAddress {
 
         try {
             em.getTransaction().begin();
-            em.merge(address);
+            em.persist(address);
             em.getTransaction().commit();
         } finally {
             em.close();
