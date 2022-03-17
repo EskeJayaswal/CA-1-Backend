@@ -37,14 +37,14 @@ class FacadePhoneTest {
     public void setUp() {
         ResetDB.truncate(emf);
 //        EntityManager em = emf.createEntityManager();
-        System.out.println("--- FACADE PHONE - BeforeEach - Completed truncate ---");
+//        System.out.println("--- FACADE PHONE - BeforeEach - Completed truncate ---");
 
         PersonDTO pDTO = new PersonDTO("email", "testFirstName", "testLastName", null);
         PhoneDTO phoneDTO = new PhoneDTO("34302011", "Cell number");
         phoneDTO.setPersonDTO(pDTO);
 
         facadePhone.create(phoneDTO);
-        System.out.println("--- FACADE PHONE - BeforeEach - Created phoneDTO ---");
+//        System.out.println("--- FACADE PHONE - BeforeEach - Created phoneDTO ---");
 //
 //        try {
 //            em.getTransaction().begin();
