@@ -25,6 +25,7 @@ public class ApplicationConfig extends Application {
      */
     private void addRestResourceClasses(Set<Class<?>> resources) {
         resources.add(errorhandling.GenericExceptionMapper.class);
+        resources.add(rest.CorsFilter.class);
 
         resources.add(APIExceptionMapper.class);
         resources.add(EntityAlreadyExistsExceptionMapper.class);
