@@ -16,7 +16,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 class FacadeHobbyTest {
 
     private static EntityManagerFactory emf;
