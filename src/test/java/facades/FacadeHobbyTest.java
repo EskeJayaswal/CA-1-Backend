@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 class FacadeHobbyTest {
 
     private static EntityManagerFactory emf;
@@ -36,7 +37,7 @@ class FacadeHobbyTest {
 
     @BeforeEach
     public void setup() {
-        truncateData();
+        ResetDB.truncate(emf);
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -57,41 +58,20 @@ class FacadeHobbyTest {
 
     @AfterAll
     public static void cleanup() {
-        truncateData();
+        ResetDB.truncate(emf);
         System.out.println("--- FACADE HOBBY TESTS COMPLETE ---");
-    }
-
-    private static void truncateData() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.createNamedQuery("Phone.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE phone AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("Hobby.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE hobby AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("Person.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE person AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("Address.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE address AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
-        } finally {
-            em.close();
-        }
     }
 
     @Test
     public void testGetHobbyCount() {
+        System.out.println("--- FACADE HOBBY - testGetHobbyCount() ---");
         Long count = facadeHobby.getHobbyCount();
         assertEquals(3, count);
     }
 
     @Test
     public void testHobbyCreate() {
+        System.out.println("--- FACADE HOBBY - testHobbyCreate() ---");
         HobbyDTO hDTO = new HobbyDTO("Sport", "Spark til en bold");
         HobbyDTO persistedHDTO = facadeHobby.create(hDTO);
 
@@ -102,6 +82,7 @@ class FacadeHobbyTest {
 
     @Test
     public void testHobbyCreateList() {
+        System.out.println("--- FACADE HOBBY - testHobbyCreateList() ---");
         HobbyDTO hDTO1 = new HobbyDTO("Sport", "Spark til en bold");
         HobbyDTO hDTO2 = new HobbyDTO("Hiking", "Ude i skoven");
         List<HobbyDTO> hList = new ArrayList<>();
@@ -120,6 +101,7 @@ class FacadeHobbyTest {
 
     @Test
     public void testGetHobbyByID() throws EntityNotFoundException {
+        System.out.println("--- FACADE HOBBY - testGetHobbyByID() ---");
         Hobby hobby = facadeHobby.getHobbyByID(1);
 
         assertEquals("Cykling", hobby.getName());
@@ -128,6 +110,7 @@ class FacadeHobbyTest {
 
     @Test
     public void testCheckValidHobbyIds() throws EntityAlreadyExistsException, EntityNotFoundException {
+        System.out.println("--- FACADE HOBBY - testCheckValidHobbyIds() ---");
         CityInfoDTO ciDTO = new CityInfoDTO("3460", "Birkerød");
         facadeCityInfo.create(ciDTO);
 
@@ -152,6 +135,7 @@ class FacadeHobbyTest {
 
     @Test
     public void testGetAllHobbies() throws EntityNotFoundException {
+        System.out.println("--- FACADE HOBBY - testGetAllHobbies() ---");
         List<HobbyDTO> hList = facadeHobby.getAllHobbies();
 
         assertEquals(1, hList.get(0).getId());
@@ -165,6 +149,7 @@ class FacadeHobbyTest {
 
     @Test
     public void testPopulateHobbies() {
+        System.out.println("--- FACADE HOBBY - testPopulateHobbies() ---");
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

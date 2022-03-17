@@ -14,6 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 class FacadePersonTest {
     private static EntityManagerFactory emf;
     private static FacadePerson facadePerson;
@@ -34,7 +35,7 @@ class FacadePersonTest {
 
     @BeforeEach
     public void setUp() {
-        truncateData();
+        ResetDB.truncate(emf);
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -51,40 +52,19 @@ class FacadePersonTest {
 
     @AfterAll
     public static void cleanup() {
-        truncateData();
+        ResetDB.truncate(emf);
         System.out.println("--- FACADE PERSON TESTS COMPLETE ---");
-    }
-
-    private static void truncateData() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.createNamedQuery("Phone.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE phone AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("Hobby.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE hobby AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("Person.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE person AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("Address.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE address AUTO_INCREMENT = 1").executeUpdate();
-
-            em.createNamedQuery("CityInfo.deleteAllRows").executeUpdate();
-            em.createNativeQuery("ALTER TABLE city_info AUTO_INCREMENT = 1").executeUpdate();
-        } finally {
-            em.close();
-        }
     }
 
     @Test
     public void testPersonCount() {
+        System.out.println("--- FACADE PERSON - testPersonCount() ---");
         assertEquals(2, facadePerson.getPersonCount());
     }
 
     @Test
     public void testGetByID() throws EntityNotFoundException, EntityAlreadyExistsException {
+        System.out.println("--- FACADE PERSON - testGetByID() ---");
         createPerson();
         PersonDTO foundPDTO = facadePerson.getById(3);
 
@@ -96,6 +76,7 @@ class FacadePersonTest {
 
     @Test
     public void testGetByPhoneNumber() throws EntityNotFoundException, EntityAlreadyExistsException {
+        System.out.println("--- FACADE PERSON - testGetByPhoneNumber() ---");
         createPerson();
         PersonDTO foundPDTO = facadePerson.getByPhoneNumber("616881");
 
@@ -107,6 +88,7 @@ class FacadePersonTest {
 
     @Test
     public void testGetPersonsWithHobby() throws EntityAlreadyExistsException, EntityNotFoundException {
+        System.out.println("--- FACADE PERSON - testGetPersonsWithHobby() ---");
         createPerson();
         List<PersonDTO> pList = facadePerson.getPersonsWithHobby(1);
 
@@ -118,6 +100,7 @@ class FacadePersonTest {
 
     @Test
     public void testGetPersonsInCity() throws EntityAlreadyExistsException, EntityNotFoundException {
+        System.out.println("--- FACADE PERSON - testGetPersonsInCity() ---");
         createPerson();
         List<PersonDTO> pList = facadePerson.getPersonsInCity("3460");
 
@@ -129,6 +112,7 @@ class FacadePersonTest {
 
     @Test
     public void testPersonCreate() throws EntityAlreadyExistsException, EntityNotFoundException {
+        System.out.println("--- FACADE PERSON - testPersonCreate() ---");
         PersonDTO pDTO = createPerson();
 
         assertEquals(3, pDTO.getId());
@@ -139,6 +123,7 @@ class FacadePersonTest {
 
     @Test
     public void testPersonUpdate() throws EntityAlreadyExistsException, EntityNotFoundException {
+        System.out.println("--- FACADE PERSON - testPersonUpdate() ---");
         createPerson();
 
         CityInfoDTO ciDTO = new CityInfoDTO("3400", "Hillerød");
@@ -174,6 +159,7 @@ class FacadePersonTest {
 
     @Test
     public void testRemoveAllPhones() throws EntityAlreadyExistsException, EntityNotFoundException {
+        System.out.println("--- FACADE PERSON - testRemoveAllPhones() ---");
         PersonDTO pDTO = createPerson();
         facadePerson.removeAllPhones(pDTO);
         PersonDTO newPDTO = facadePerson.getById(3);
@@ -183,6 +169,7 @@ class FacadePersonTest {
 
     @Test
     public void testRemoveAllHobbies() throws EntityAlreadyExistsException, EntityNotFoundException {
+        System.out.println("--- FACADE PERSON - testRemoveAllHobbies() ---");
         PersonDTO pDTO = createPerson();
         facadePerson.removeAllHobbies(pDTO);
         PersonDTO newPDTO = facadePerson.getById(3);
@@ -191,6 +178,7 @@ class FacadePersonTest {
     }
 
     private PersonDTO createPerson() throws EntityAlreadyExistsException, EntityNotFoundException {
+//        System.out.println("--- FACADE PERSON - createPerson() ---");
         CityInfoDTO ciDTO = new CityInfoDTO("3460", "Birkerød");
         facadeCityInfo.create(ciDTO);
 
