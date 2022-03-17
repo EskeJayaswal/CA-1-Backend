@@ -45,6 +45,10 @@ Content-Type: application/json
 
 ###
 
+GET https://eskecphbusiness.dk/ca1/api/person/count
+
+###
+
 GET http://localhost:8080/ca1_war_exploded/api/person/infophone
 Content-Type: application/json
 
